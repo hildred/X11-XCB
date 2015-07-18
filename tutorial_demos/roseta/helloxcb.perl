@@ -15,7 +15,7 @@ X11::XCB::create_gc($x, $background, $x->root->{id}, GC_BACKGROUND | GC_GRAPHICS
 
 my $w = $x->root->create_child(
   class => X11::XCB::WINDOW_CLASS_INPUT_OUTPUT,
-  rect => [0, 0, 640, 350],
+  rect => [0, 0, 150, 150],
   background_color => '#ffffff',
   event_mask => [qw(EXPOSURE KEY_PRESS)],
 );
