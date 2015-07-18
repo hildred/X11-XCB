@@ -10,6 +10,7 @@ new(self)
   PREINIT:
     X11_XCB_ICCCM_WMHints *buf;
   CODE:
+    if(0!=strcmp(self,"X11::XCB::ICCCM::WMHints")) Perl_croak(aTHX_ "%s: self is %s", "X11::XCB::ICCCM::WMHints", self);
     Newxz(buf, 1, X11_XCB_ICCCM_WMHints);
     RETVAL = buf;
   OUTPUT:
@@ -68,6 +69,7 @@ new(self)
   PREINIT:
     X11_XCB_ICCCM_SizeHints *buf;
   CODE:
+    if(0!=strcmp(self,"X11::XCB::ICCCM::WMHints")) Perl_croak(aTHX_ "%s: self is %s", "X11::XCB::ICCCM::WMHints", self);
     New(0, buf, 1, X11_XCB_ICCCM_SizeHints);
     RETVAL = buf;
   OUTPUT:

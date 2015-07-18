@@ -7,6 +7,7 @@ new(self,byte1,byte2)
   PREINIT:
     XCBChar2b *buf;
   CODE:
+    if(0!=strcmp(self,"XCBChar2b")) Perl_croak(aTHX_ "%s: self is %s", "XCBChar2b", self);
     New(0, buf, 1, XCBChar2b);
     buf->byte1 = byte1;
     buf->byte2 = byte2;
@@ -43,6 +44,7 @@ new(self,x,y)
   PREINIT:
     XCBPoint *buf;
   CODE:
+    if(0!=strcmp(self,"XCBPoint")) Perl_croak(aTHX_ "%s: self is %s", "XCBPoint", self);
     New(0, buf, 1, XCBPoint);
     buf->x = x;
     buf->y = y;
@@ -81,6 +83,7 @@ new(self,x,y,width,height)
   PREINIT:
     XCBRectangle *buf;
   CODE:
+    if(0!=strcmp(self,"XCBRectangle")) Perl_croak(aTHX_ "%s: self is %s", "XCBRectangle", self);
     New(0, buf, 1, XCBRectangle);
     buf->x = x;
     buf->y = y;
@@ -143,6 +146,7 @@ new(self,x,y,width,height,angle1,angle2)
   PREINIT:
     XCBArc *buf;
   CODE:
+    if(0!=strcmp(self,"XCBArc")) Perl_croak(aTHX_ "%s: self is %s", "XCBArc", self);
     New(0, buf, 1, XCBArc);
     buf->x = x;
     buf->y = y;
@@ -224,6 +228,7 @@ new(self,depth,bits_per_pixel,scanline_pad)
   PREINIT:
     XCBFormat *buf;
   CODE:
+    if(0!=strcmp(self,"XCBFormat")) Perl_croak(aTHX_ "%s: self is %s", "XCBFormat", self);
     New(0, buf, 1, XCBFormat);
     buf->depth = depth;
     buf->bits_per_pixel = bits_per_pixel;
@@ -276,6 +281,7 @@ new(self,visual_id,class,bits_per_rgb_value,colormap_entries,red_mask,green_mask
   PREINIT:
     XCBVisualtype *buf;
   CODE:
+    if(0!=strcmp(self,"XCBVisualtype")) Perl_croak(aTHX_ "%s: self is %s", "XCBVisualtype", self);
     New(0, buf, 1, XCBVisualtype);
     buf->visual_id = visual_id;
     buf->_class = class;
@@ -367,6 +373,7 @@ new(self,depth,visuals_len)
   PREINIT:
     XCBDepth *buf;
   CODE:
+    if(0!=strcmp(self,"XCBDepth")) Perl_croak(aTHX_ "%s: self is %s", "XCBDepth", self);
     New(0, buf, 1, XCBDepth);
     buf->depth = depth;
     buf->visuals_len = visuals_len;
@@ -397,6 +404,7 @@ new(self,root,default_colormap,white_pixel,black_pixel,current_input_masks,width
   PREINIT:
     XCBScreen *buf;
   CODE:
+    if(0!=strcmp(self,"XCBScreen")) Perl_croak(aTHX_ "%s: self is %s", "XCBScreen", self);
     New(0, buf, 1, XCBScreen);
     buf->root = root;
     buf->default_colormap = default_colormap;
@@ -430,6 +438,7 @@ new(self,byte_order,protocol_major_version,protocol_minor_version,authorization_
   PREINIT:
     XCBSetup_request *buf;
   CODE:
+    if(0!=strcmp(self,"XCBSetup::request")) Perl_croak(aTHX_ "%s: self is %s", "XCBSetup::request", self);
     New(0, buf, 1, XCBSetup_request);
     buf->byte_order = byte_order;
     buf->protocol_major_version = protocol_major_version;
@@ -452,6 +461,7 @@ new(self,status,reason_len,protocol_major_version,protocol_minor_version,length)
   PREINIT:
     XCBSetup_failed *buf;
   CODE:
+    if(0!=strcmp(self,"XCBSetup::failed")) Perl_croak(aTHX_ "%s: self is %s", "XCBSetup::failed", self);
     New(0, buf, 1, XCBSetup_failed);
     buf->status = status;
     buf->reason_len = reason_len;
@@ -471,6 +481,7 @@ new(self,status,length)
   PREINIT:
     XCBSetup_authenticate *buf;
   CODE:
+    if(0!=strcmp(self,"XCBSetup::authenticate")) Perl_croak(aTHX_ "%s: self is %s", "XCBSetup::authenticate", self);
     New(0, buf, 1, XCBSetup_authenticate);
     buf->status = status;
     buf->length = length;
@@ -503,6 +514,7 @@ new(self,status,protocol_major_version,protocol_minor_version,length,release_num
   PREINIT:
     XCBSetup *buf;
   CODE:
+    if(0!=strcmp(self,"XCBSetup")) Perl_croak(aTHX_ "%s: self is %s", "XCBSetup", self);
     New(0, buf, 1, XCBSetup);
     buf->status = status;
     buf->protocol_major_version = protocol_major_version;
@@ -536,6 +548,7 @@ new(self,time,x,y)
   PREINIT:
     XCBTimecoord *buf;
   CODE:
+    if(0!=strcmp(self,"XCBTimecoord")) Perl_croak(aTHX_ "%s: self is %s", "XCBTimecoord", self);
     New(0, buf, 1, XCBTimecoord);
     buf->time = time;
     buf->x = x;
@@ -583,6 +596,7 @@ new(self,name,value)
   PREINIT:
     XCBFontprop *buf;
   CODE:
+    if(0!=strcmp(self,"XCBFontprop")) Perl_croak(aTHX_ "%s: self is %s", "XCBFontprop", self);
     New(0, buf, 1, XCBFontprop);
     buf->name = name;
     buf->value = value;
@@ -623,6 +637,7 @@ new(self,left_side_bearing,right_side_bearing,character_width,ascent,descent,att
   PREINIT:
     XCBCharinfo *buf;
   CODE:
+    if(0!=strcmp(self,"XCBCharinfo")) Perl_croak(aTHX_ "%s: self is %s", "XCBCharinfo", self);
     New(0, buf, 1, XCBCharinfo);
     buf->left_side_bearing = left_side_bearing;
     buf->right_side_bearing = right_side_bearing;
@@ -702,6 +717,7 @@ new(self,name_len)
   PREINIT:
     XCBStr *buf;
   CODE:
+    if(0!=strcmp(self,"XCBStr")) Perl_croak(aTHX_ "%s: self is %s", "XCBStr", self);
     New(0, buf, 1, XCBStr);
     buf->name_len = name_len;
     RETVAL = buf;
@@ -719,6 +735,7 @@ new(self,x1,y1,x2,y2)
   PREINIT:
     XCBSegment *buf;
   CODE:
+    if(0!=strcmp(self,"XCBSegment")) Perl_croak(aTHX_ "%s: self is %s", "XCBSegment", self);
     New(0, buf, 1, XCBSegment);
     buf->x1 = x1;
     buf->y1 = y1;
@@ -780,6 +797,7 @@ new(self,pixel,red,green,blue,flags)
   PREINIT:
     XCBColoritem *buf;
   CODE:
+    if(0!=strcmp(self,"XCBColoritem")) Perl_croak(aTHX_ "%s: self is %s", "XCBColoritem", self);
     New(0, buf, 1, XCBColoritem);
     buf->pixel = pixel;
     buf->red = red;
@@ -850,6 +868,7 @@ new(self,red,green,blue)
   PREINIT:
     XCBRgb *buf;
   CODE:
+    if(0!=strcmp(self,"XCBRgb")) Perl_croak(aTHX_ "%s: self is %s", "XCBRgb", self);
     New(0, buf, 1, XCBRgb);
     buf->red = red;
     buf->green = green;
@@ -897,6 +916,7 @@ new(self,family,address_len)
   PREINIT:
     XCBHost *buf;
   CODE:
+    if(0!=strcmp(self,"XCBHost")) Perl_croak(aTHX_ "%s: self is %s", "XCBHost", self);
     New(0, buf, 1, XCBHost);
     buf->family = family;
     buf->address_len = address_len;
@@ -2191,7 +2211,7 @@ poly_rectangle(conn,drawable,gc,...)
     SV** that;
     AV* this_;
   INIT:
-    int dummy;
+    //int dummy;
     //printf("debug3:   '%s'\n",SvPV(ST(0),dummy));
     //printf("debug3:   '%s'\n",SvPV(ST(1),dummy));
     //printf("debug3:   '%s'\n",SvPV(ST(2),dummy));
@@ -2200,13 +2220,13 @@ poly_rectangle(conn,drawable,gc,...)
     rectangles = malloc(rectangles_len*sizeof(XCBRectangle));
     if(0==rectangles){Perl_croak(aTHX_ "%s: %s malloc failed","X11::XCB::poly_rectangle","rectarry");}
     for(i=0;i<rectangles_len;i++){
-	int dummy;
 	this=ST(i+3);
+	//printf("debug1: %d\n",i);
 	//printf("debug1: %d\n",i);
 	if (SvROK(this) ){
 		if (SvTYPE(SvRV(this)) == SVt_PVAV){
 			this_ = (AV*)SvRV(this);
-			if(3!=av_len((AV*)this_)){Perl_croak(aTHX_ "$s: %s rectangles must have four dimensions","X11::XCB::poly_rectangle","rectarry");}
+			if(3!=av_len((AV*)this_)){Perl_croak(aTHX_ "%s: rectangles must have four dimensions","X11::XCB::poly_rectangle");}
 			for(j=0;j<4;j++){
 				that=av_fetch(this_,j,0);
 				//printf("debug2:  %d\n",j);
@@ -2231,7 +2251,7 @@ poly_rectangle(conn,drawable,gc,...)
 			for(j=0;j<4;j++){
 				that=hv_fetch((HV*)this_,param[j],strlen(param[j]),0);
 				if(0==that){Perl_croak(aTHX_ "%s: %s->%s is missing","X11::XCB::poly_rectangle","rectarry",param[j]);}
-				SvGETMAGIC(*that);
+				//SvGETMAGIC(*that);
 				switch(j){
 					case 0: rectangles[i].x=SvUV(*that);break;
 					case 1: rectangles[i].y=SvUV(*that);break;
@@ -3297,10 +3317,6 @@ get_window_attributes_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_get_window_attributes_cookie_t cookie;
     xcb_get_window_attributes_reply_t *reply;
   CODE:
@@ -3334,10 +3350,6 @@ get_geometry_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_get_geometry_cookie_t cookie;
     xcb_get_geometry_reply_t *reply;
   CODE:
@@ -3363,10 +3375,6 @@ query_tree_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_query_tree_cookie_t cookie;
     xcb_query_tree_reply_t *reply;
   CODE:
@@ -3388,10 +3396,6 @@ intern_atom_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_intern_atom_cookie_t cookie;
     xcb_intern_atom_reply_t *reply;
   CODE:
@@ -3411,10 +3415,6 @@ get_atom_name_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_get_atom_name_cookie_t cookie;
     xcb_get_atom_name_reply_t *reply;
   CODE:
@@ -3434,10 +3434,6 @@ get_property_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_get_property_cookie_t cookie;
     xcb_get_property_reply_t *reply;
   CODE:
@@ -3450,9 +3446,12 @@ get_property_reply(conn,sequence)
     hv_store(hash, "type", strlen("type"), newSViv(reply->type), 0);
     hv_store(hash, "bytes_after", strlen("bytes_after"), newSViv(reply->bytes_after), 0);
     hv_store(hash, "value_len", strlen("value_len"), newSViv(reply->value_len), 0);
+    {
+    int _len;
     _len = reply->value_len * (reply->format / 8);
     if (_len > 0)
         hv_store(hash, "value", strlen("value"), newSVpvn((const char*)(reply + 1), _len), 0);
+    }
     RETVAL = hash;
   OUTPUT:
     RETVAL
@@ -3463,10 +3462,6 @@ list_properties_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_list_properties_cookie_t cookie;
     xcb_list_properties_reply_t *reply;
   CODE:
@@ -3486,10 +3481,6 @@ get_selection_owner_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_get_selection_owner_cookie_t cookie;
     xcb_get_selection_owner_reply_t *reply;
   CODE:
@@ -3509,10 +3500,6 @@ grab_pointer_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_grab_pointer_cookie_t cookie;
     xcb_grab_pointer_reply_t *reply;
   CODE:
@@ -3532,10 +3519,6 @@ grab_keyboard_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_grab_keyboard_cookie_t cookie;
     xcb_grab_keyboard_reply_t *reply;
   CODE:
@@ -3555,10 +3538,6 @@ query_pointer_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_query_pointer_cookie_t cookie;
     xcb_query_pointer_reply_t *reply;
   CODE:
@@ -3585,10 +3564,6 @@ get_motion_events_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_get_motion_events_cookie_t cookie;
     xcb_get_motion_events_reply_t *reply;
   CODE:
@@ -3599,10 +3574,12 @@ get_motion_events_reply(conn,sequence)
     hv_store(hash, "length", strlen("length"), newSViv(reply->length), 0);
     hv_store(hash, "events_len", strlen("events_len"), newSViv(reply->events_len), 0);
     {
+    AV * alist;
     /* Handling list part of the reply */
     alist = newAV();
     xcb_timecoord_iterator_t iterator = xcb_get_motion_events_events_iterator(reply);
     for (; iterator.rem > 0; xcb_timecoord_next(&iterator)) {
+      HV * inner_hash;
       xcb_timecoord_t *data = iterator.data;
       inner_hash = newHV();
       hv_store(inner_hash, "time", strlen("time"), newSViv(data->time), 0);
@@ -3622,10 +3599,6 @@ translate_coordinates_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_translate_coordinates_cookie_t cookie;
     xcb_translate_coordinates_reply_t *reply;
   CODE:
@@ -3648,10 +3621,6 @@ get_input_focus_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_get_input_focus_cookie_t cookie;
     xcb_get_input_focus_reply_t *reply;
   CODE:
@@ -3672,10 +3641,6 @@ query_keymap_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_query_keymap_cookie_t cookie;
     xcb_query_keymap_reply_t *reply;
   CODE:
@@ -3694,10 +3659,6 @@ query_font_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_query_font_cookie_t cookie;
     xcb_query_font_reply_t *reply;
   CODE:
@@ -3720,10 +3681,12 @@ query_font_reply(conn,sequence)
     hv_store(hash, "font_descent", strlen("font_descent"), newSViv(reply->font_descent), 0);
     hv_store(hash, "char_infos_len", strlen("char_infos_len"), newSViv(reply->char_infos_len), 0);
     {
+    AV * alist;
     /* Handling list part of the reply */
     alist = newAV();
     xcb_fontprop_iterator_t iterator = xcb_query_font_properties_iterator(reply);
     for (; iterator.rem > 0; xcb_fontprop_next(&iterator)) {
+      HV * inner_hash;
       xcb_fontprop_t *data = iterator.data;
       inner_hash = newHV();
       hv_store(inner_hash, "name", strlen("name"), newSViv(data->name), 0);
@@ -3733,10 +3696,12 @@ query_font_reply(conn,sequence)
     hv_store(hash, "properties", strlen("properties"), newRV((SV*)alist), 0);
     }
     {
+    AV * alist;
     /* Handling list part of the reply */
     alist = newAV();
     xcb_charinfo_iterator_t iterator = xcb_query_font_char_infos_iterator(reply);
     for (; iterator.rem > 0; xcb_charinfo_next(&iterator)) {
+      HV * inner_hash;
       xcb_charinfo_t *data = iterator.data;
       inner_hash = newHV();
       hv_store(inner_hash, "left_side_bearing", strlen("left_side_bearing"), newSViv(data->left_side_bearing), 0);
@@ -3759,10 +3724,6 @@ query_text_extents_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_query_text_extents_cookie_t cookie;
     xcb_query_text_extents_reply_t *reply;
   CODE:
@@ -3789,10 +3750,6 @@ list_fonts_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_list_fonts_cookie_t cookie;
     xcb_list_fonts_reply_t *reply;
   CODE:
@@ -3803,10 +3760,12 @@ list_fonts_reply(conn,sequence)
     hv_store(hash, "length", strlen("length"), newSViv(reply->length), 0);
     hv_store(hash, "names_len", strlen("names_len"), newSViv(reply->names_len), 0);
     {
+    AV * alist;
     /* Handling list part of the reply */
     alist = newAV();
     xcb_str_iterator_t iterator = xcb_list_fonts_names_iterator(reply);
     for (; iterator.rem > 0; xcb_str_next(&iterator)) {
+      HV * inner_hash;
       xcb_str_t *data = iterator.data;
       inner_hash = newHV();
       hv_store(inner_hash, "name_len", strlen("name_len"), newSViv(data->name_len), 0);
@@ -3824,10 +3783,6 @@ list_fonts_with_info_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_list_fonts_with_info_cookie_t cookie;
     xcb_list_fonts_with_info_reply_t *reply;
   CODE:
@@ -3851,10 +3806,12 @@ list_fonts_with_info_reply(conn,sequence)
     hv_store(hash, "font_descent", strlen("font_descent"), newSViv(reply->font_descent), 0);
     hv_store(hash, "replies_hint", strlen("replies_hint"), newSViv(reply->replies_hint), 0);
     {
+    AV * alist;
     /* Handling list part of the reply */
     alist = newAV();
     xcb_fontprop_iterator_t iterator = xcb_list_fonts_with_info_properties_iterator(reply);
     for (; iterator.rem > 0; xcb_fontprop_next(&iterator)) {
+      HV * inner_hash;
       xcb_fontprop_t *data = iterator.data;
       inner_hash = newHV();
       hv_store(inner_hash, "name", strlen("name"), newSViv(data->name), 0);
@@ -3873,10 +3830,6 @@ get_font_path_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_get_font_path_cookie_t cookie;
     xcb_get_font_path_reply_t *reply;
   CODE:
@@ -3887,10 +3840,12 @@ get_font_path_reply(conn,sequence)
     hv_store(hash, "length", strlen("length"), newSViv(reply->length), 0);
     hv_store(hash, "path_len", strlen("path_len"), newSViv(reply->path_len), 0);
     {
+    AV * alist;
     /* Handling list part of the reply */
     alist = newAV();
     xcb_str_iterator_t iterator = xcb_get_font_path_path_iterator(reply);
     for (; iterator.rem > 0; xcb_str_next(&iterator)) {
+      HV * inner_hash;
       xcb_str_t *data = iterator.data;
       inner_hash = newHV();
       hv_store(inner_hash, "name_len", strlen("name_len"), newSViv(data->name_len), 0);
@@ -3908,10 +3863,6 @@ get_image_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_get_image_cookie_t cookie;
     xcb_get_image_reply_t *reply;
   CODE:
@@ -3932,10 +3883,6 @@ list_installed_colormaps_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_list_installed_colormaps_cookie_t cookie;
     xcb_list_installed_colormaps_reply_t *reply;
   CODE:
@@ -3955,10 +3902,6 @@ alloc_color_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_alloc_color_cookie_t cookie;
     xcb_alloc_color_reply_t *reply;
   CODE:
@@ -3981,10 +3924,6 @@ alloc_named_color_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_alloc_named_color_cookie_t cookie;
     xcb_alloc_named_color_reply_t *reply;
   CODE:
@@ -4010,10 +3949,6 @@ alloc_color_cells_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_alloc_color_cells_cookie_t cookie;
     xcb_alloc_color_cells_reply_t *reply;
   CODE:
@@ -4034,10 +3969,6 @@ alloc_color_planes_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_alloc_color_planes_cookie_t cookie;
     xcb_alloc_color_planes_reply_t *reply;
   CODE:
@@ -4060,10 +3991,6 @@ query_colors_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_query_colors_cookie_t cookie;
     xcb_query_colors_reply_t *reply;
   CODE:
@@ -4074,10 +4001,12 @@ query_colors_reply(conn,sequence)
     hv_store(hash, "length", strlen("length"), newSViv(reply->length), 0);
     hv_store(hash, "colors_len", strlen("colors_len"), newSViv(reply->colors_len), 0);
     {
+    AV * alist;
     /* Handling list part of the reply */
     alist = newAV();
     xcb_rgb_iterator_t iterator = xcb_query_colors_colors_iterator(reply);
     for (; iterator.rem > 0; xcb_rgb_next(&iterator)) {
+      HV * inner_hash;
       xcb_rgb_t *data = iterator.data;
       inner_hash = newHV();
       hv_store(inner_hash, "red", strlen("red"), newSViv(data->red), 0);
@@ -4097,10 +4026,6 @@ lookup_color_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_lookup_color_cookie_t cookie;
     xcb_lookup_color_reply_t *reply;
   CODE:
@@ -4125,10 +4050,6 @@ query_best_size_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_query_best_size_cookie_t cookie;
     xcb_query_best_size_reply_t *reply;
   CODE:
@@ -4149,10 +4070,6 @@ query_extension_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_query_extension_cookie_t cookie;
     xcb_query_extension_reply_t *reply;
   CODE:
@@ -4175,10 +4092,6 @@ list_extensions_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_list_extensions_cookie_t cookie;
     xcb_list_extensions_reply_t *reply;
   CODE:
@@ -4189,10 +4102,12 @@ list_extensions_reply(conn,sequence)
     hv_store(hash, "length", strlen("length"), newSViv(reply->length), 0);
     hv_store(hash, "names_len", strlen("names_len"), newSViv(reply->names_len), 0);
     {
+    AV * alist;
     /* Handling list part of the reply */
     alist = newAV();
     xcb_str_iterator_t iterator = xcb_list_extensions_names_iterator(reply);
     for (; iterator.rem > 0; xcb_str_next(&iterator)) {
+      HV * inner_hash;
       xcb_str_t *data = iterator.data;
       inner_hash = newHV();
       hv_store(inner_hash, "name_len", strlen("name_len"), newSViv(data->name_len), 0);
@@ -4210,10 +4125,6 @@ get_keyboard_mapping_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_get_keyboard_mapping_cookie_t cookie;
     xcb_get_keyboard_mapping_reply_t *reply;
   CODE:
@@ -4233,10 +4144,6 @@ get_keyboard_control_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_get_keyboard_control_cookie_t cookie;
     xcb_get_keyboard_control_reply_t *reply;
   CODE:
@@ -4261,10 +4168,6 @@ get_pointer_control_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_get_pointer_control_cookie_t cookie;
     xcb_get_pointer_control_reply_t *reply;
   CODE:
@@ -4286,10 +4189,6 @@ get_screen_saver_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_get_screen_saver_cookie_t cookie;
     xcb_get_screen_saver_reply_t *reply;
   CODE:
@@ -4312,10 +4211,6 @@ list_hosts_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_list_hosts_cookie_t cookie;
     xcb_list_hosts_reply_t *reply;
   CODE:
@@ -4327,10 +4222,12 @@ list_hosts_reply(conn,sequence)
     hv_store(hash, "mode", strlen("mode"), newSViv(reply->mode), 0);
     hv_store(hash, "hosts_len", strlen("hosts_len"), newSViv(reply->hosts_len), 0);
     {
+    AV * alist;
     /* Handling list part of the reply */
     alist = newAV();
     xcb_host_iterator_t iterator = xcb_list_hosts_hosts_iterator(reply);
     for (; iterator.rem > 0; xcb_host_next(&iterator)) {
+      HV * inner_hash;
       xcb_host_t *data = iterator.data;
       inner_hash = newHV();
       hv_store(inner_hash, "family", strlen("family"), newSViv(data->family), 0);
@@ -4349,10 +4246,6 @@ set_pointer_mapping_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_set_pointer_mapping_cookie_t cookie;
     xcb_set_pointer_mapping_reply_t *reply;
   CODE:
@@ -4372,10 +4265,6 @@ get_pointer_mapping_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_get_pointer_mapping_cookie_t cookie;
     xcb_get_pointer_mapping_reply_t *reply;
   CODE:
@@ -4395,10 +4284,6 @@ set_modifier_mapping_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_set_modifier_mapping_cookie_t cookie;
     xcb_set_modifier_mapping_reply_t *reply;
   CODE:
@@ -4418,10 +4303,6 @@ get_modifier_mapping_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_get_modifier_mapping_cookie_t cookie;
     xcb_get_modifier_mapping_reply_t *reply;
   CODE:
@@ -4446,6 +4327,7 @@ new(self,x_org,y_org,width,height)
   PREINIT:
     XCBXinerama_screen_info *buf;
   CODE:
+    if(0!=strcmp(self,"XCBXinerama::screen::info")) Perl_croak(aTHX_ "%s: self is %s", "XCBXinerama::screen::info", self);
     New(0, buf, 1, XCBXinerama_screen_info);
     buf->x_org = x_org;
     buf->y_org = y_org;
@@ -4606,10 +4488,6 @@ xinerama_query_version_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_xinerama_query_version_cookie_t cookie;
     xcb_xinerama_query_version_reply_t *reply;
   CODE:
@@ -4630,10 +4508,6 @@ xinerama_get_state_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_xinerama_get_state_cookie_t cookie;
     xcb_xinerama_get_state_reply_t *reply;
   CODE:
@@ -4654,10 +4528,6 @@ xinerama_get_screen_count_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_xinerama_get_screen_count_cookie_t cookie;
     xcb_xinerama_get_screen_count_reply_t *reply;
   CODE:
@@ -4678,10 +4548,6 @@ xinerama_get_screen_size_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_xinerama_get_screen_size_cookie_t cookie;
     xcb_xinerama_get_screen_size_reply_t *reply;
   CODE:
@@ -4704,10 +4570,6 @@ xinerama_is_active_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_xinerama_is_active_cookie_t cookie;
     xcb_xinerama_is_active_reply_t *reply;
   CODE:
@@ -4727,10 +4589,6 @@ xinerama_query_screens_reply(conn,sequence)
     int sequence
   PREINIT:
     HV * hash;
-    HV * inner_hash;
-    AV * alist;
-    int c;
-    int _len;
     xcb_xinerama_query_screens_cookie_t cookie;
     xcb_xinerama_query_screens_reply_t *reply;
   CODE:
@@ -4741,10 +4599,12 @@ xinerama_query_screens_reply(conn,sequence)
     hv_store(hash, "length", strlen("length"), newSViv(reply->length), 0);
     hv_store(hash, "number", strlen("number"), newSViv(reply->number), 0);
     {
+    AV * alist;
     /* Handling list part of the reply */
     alist = newAV();
     xcb_xinerama_screen_info_iterator_t iterator = xcb_xinerama_query_screens_screen_info_iterator(reply);
     for (; iterator.rem > 0; xcb_xinerama_screen_info_next(&iterator)) {
+      HV * inner_hash;
       xcb_xinerama_screen_info_t *data = iterator.data;
       inner_hash = newHV();
       hv_store(inner_hash, "x_org", strlen("x_org"), newSViv(data->x_org), 0);

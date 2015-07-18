@@ -227,8 +227,6 @@ SV *
 wait_for_event(self)
     XCBConnection * self
   PREINIT:
-    HV * hash;
-    SV * result;
     xcb_generic_event_t * event;
   CODE:
     event = xcb_wait_for_event(self);
@@ -245,8 +243,6 @@ SV *
 poll_for_event(self)
     XCBConnection * self
   PREINIT:
-    HV * hash;
-    SV * result;
     xcb_generic_event_t * event;
   CODE:
     event = xcb_poll_for_event(self);

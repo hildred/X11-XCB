@@ -66,6 +66,8 @@ sub tmpl_struct {
     my ($name, $params, $types) = @_;
 
     my $constructor = 'new';
+    my $cname = $name;
+    $cname =~ s/_/::/g;
 
     my $param = join ',', @$params;
     my $param_decl = indent { "$types->{$_} $_" } "\n", @$params;
@@ -80,6 +82,7 @@ $param_decl
   PREINIT:
     $name *buf;
   CODE:
+    if(0!=strcmp(self,"$cname")) Perl_croak(aTHX_ "%s: self is %s", "$cname", self);
     New(0, buf, 1, $name);
 $set_struct
     RETVAL = buf;
@@ -312,10 +315,6 @@ sub do_replies($\%\%) {
         print OUT "    int sequence\n";
         print OUT "  PREINIT:\n";
         print OUT "    HV * hash;\n";
-        print OUT "    HV * inner_hash;\n";
-        print OUT "    AV * alist;\n";
-        print OUT "    int c;\n";
-        print OUT "    int _len;\n";
         print OUT "    $cookie cookie;\n";
         print OUT "    $reply *reply;\n";
         print OUT "  CODE:\n";
@@ -348,9 +347,12 @@ sub do_replies($\%\%) {
             if ($list->{type} eq 'void') {
 
                 # A byte-array. Provide it as SV.
+		print OUT "    {\n";
+		print OUT "    int _len;\n";
                 print OUT "    _len = reply->value_len * (reply->format / 8);\n";
                 print OUT "    if (_len > 0)\n";
                 print OUT "        hv_store(hash, \"value\", strlen(\"value\"), newSVpvn((const char*)(reply + 1), _len), 0);\n";
+		print OUT "    }\n";
                 next;
             }
 
@@ -360,10 +362,12 @@ sub do_replies($\%\%) {
             next unless defined($struct->{field}) && scalar(@{ $struct->{field} }) > 0;
 
             print OUT "    {\n";
+	    print OUT "    AV * alist;\n";
             print OUT "    /* Handling list part of the reply */\n";
             print OUT "    alist = newAV();\n";
             print OUT "    $iterator iterator = $pre" . '_' . $listname . "_iterator(reply);\n";
             print OUT "    for (; iterator.rem > 0; $iterator_next(&iterator)) {\n";
+	    print OUT "      HV * inner_hash;\n";
             print OUT "      $type *data = iterator.data;\n";
             print OUT "      inner_hash = newHV();\n";
 
@@ -553,18 +557,18 @@ sub xcb_type($) {
 sub decamelize($) {
     my ($camel) = @_;
 
-    my $special = [qw(
-        CHAR2B
-        INT64
-        FLOAT32
-        FLOAT64
-        BOOL32
-        STRING8
-        Family_DECnet
-        DECnet
-   )];
+    my %special = (qw(
+        CHAR2B	1
+        INT64	1
+        FLOAT32	1
+        FLOAT64	1
+        BOOL32	1
+        STRING8	1
+        Family_DECnet	1
+        DECnet	1
+   ));
 
-    return lc $camel if $camel ~~ $special;
+    return lc $camel if $special{$camel};
 
     # FIXME: eliminate this special case
     return $camel if $camel =~ /^CUT_BUFFER/;
@@ -592,7 +596,14 @@ sub decamelize($) {
 
 sub cname($) {
     my $name = shift;
-    return "_$name" if $name ~~ [ qw/new delete class operator/ ];
+    my %special = (qw(
+	new	1
+	delete	1
+	class	1
+	operator	1
+   ));
+
+    return "_$name" if $special{$name};
     return $name;
 }
 
