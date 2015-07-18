@@ -79,7 +79,7 @@ WriteMakefile(
 );
 
 postamble <<'END_OF_MAKEFILE';
-XCB_xs.inc:
+XCB_xs.inc: _GenerateMyXS.pm
 	$(PERL) -M_GenerateMyXS -E '_GenerateMyXS::generate()'
 
 XCB.c: XCB_xs.inc XCB_util.inc XCB.inc
