@@ -1,13 +1,13 @@
 MODULE = X11::XCB PACKAGE = XCBChar2b
 XCBChar2b *
 new(self,byte1,byte2)
-    char *self
+    SV* self
     uint8_t byte1
     uint8_t byte2
   PREINIT:
     XCBChar2b *buf;
   CODE:
-    if(0!=strcmp(self,"XCBChar2b")) Perl_croak(aTHX_ "%s: self is %s", "XCBChar2b", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBChar2b");
     New(0, buf, 1, XCBChar2b);
     buf->byte1 = byte1;
     buf->byte2 = byte2;
@@ -38,13 +38,13 @@ byte2(self)
 MODULE = X11::XCB PACKAGE = XCBPoint
 XCBPoint *
 new(self,x,y)
-    char *self
+    SV* self
     uint16_t x
     uint16_t y
   PREINIT:
     XCBPoint *buf;
   CODE:
-    if(0!=strcmp(self,"XCBPoint")) Perl_croak(aTHX_ "%s: self is %s", "XCBPoint", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBPoint");
     New(0, buf, 1, XCBPoint);
     buf->x = x;
     buf->y = y;
@@ -75,7 +75,7 @@ y(self)
 MODULE = X11::XCB PACKAGE = XCBRectangle
 XCBRectangle *
 new(self,x,y,width,height)
-    char *self
+    SV* self
     uint16_t x
     uint16_t y
     uint16_t width
@@ -83,7 +83,7 @@ new(self,x,y,width,height)
   PREINIT:
     XCBRectangle *buf;
   CODE:
-    if(0!=strcmp(self,"XCBRectangle")) Perl_croak(aTHX_ "%s: self is %s", "XCBRectangle", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBRectangle");
     New(0, buf, 1, XCBRectangle);
     buf->x = x;
     buf->y = y;
@@ -136,7 +136,7 @@ height(self)
 MODULE = X11::XCB PACKAGE = XCBArc
 XCBArc *
 new(self,x,y,width,height,angle1,angle2)
-    char *self
+    SV* self
     uint16_t x
     uint16_t y
     uint16_t width
@@ -146,7 +146,7 @@ new(self,x,y,width,height,angle1,angle2)
   PREINIT:
     XCBArc *buf;
   CODE:
-    if(0!=strcmp(self,"XCBArc")) Perl_croak(aTHX_ "%s: self is %s", "XCBArc", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBArc");
     New(0, buf, 1, XCBArc);
     buf->x = x;
     buf->y = y;
@@ -221,14 +221,14 @@ angle2(self)
 MODULE = X11::XCB PACKAGE = XCBFormat
 XCBFormat *
 new(self,depth,bits_per_pixel,scanline_pad)
-    char *self
+    SV* self
     uint8_t depth
     uint8_t bits_per_pixel
     uint8_t scanline_pad
   PREINIT:
     XCBFormat *buf;
   CODE:
-    if(0!=strcmp(self,"XCBFormat")) Perl_croak(aTHX_ "%s: self is %s", "XCBFormat", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBFormat");
     New(0, buf, 1, XCBFormat);
     buf->depth = depth;
     buf->bits_per_pixel = bits_per_pixel;
@@ -270,7 +270,7 @@ scanline_pad(self)
 MODULE = X11::XCB PACKAGE = XCBVisualtype
 XCBVisualtype *
 new(self,visual_id,class,bits_per_rgb_value,colormap_entries,red_mask,green_mask,blue_mask)
-    char *self
+    SV* self
     uint32_t visual_id
     uint8_t class
     uint8_t bits_per_rgb_value
@@ -281,7 +281,7 @@ new(self,visual_id,class,bits_per_rgb_value,colormap_entries,red_mask,green_mask
   PREINIT:
     XCBVisualtype *buf;
   CODE:
-    if(0!=strcmp(self,"XCBVisualtype")) Perl_croak(aTHX_ "%s: self is %s", "XCBVisualtype", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBVisualtype");
     New(0, buf, 1, XCBVisualtype);
     buf->visual_id = visual_id;
     buf->_class = class;
@@ -367,13 +367,13 @@ blue_mask(self)
 MODULE = X11::XCB PACKAGE = XCBDepth
 XCBDepth *
 new(self,depth,visuals_len)
-    char *self
+    SV* self
     uint8_t depth
     uint16_t visuals_len
   PREINIT:
     XCBDepth *buf;
   CODE:
-    if(0!=strcmp(self,"XCBDepth")) Perl_croak(aTHX_ "%s: self is %s", "XCBDepth", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBDepth");
     New(0, buf, 1, XCBDepth);
     buf->depth = depth;
     buf->visuals_len = visuals_len;
@@ -384,7 +384,7 @@ new(self,depth,visuals_len)
 MODULE = X11::XCB PACKAGE = XCBScreen
 XCBScreen *
 new(self,root,default_colormap,white_pixel,black_pixel,current_input_masks,width_in_pixels,height_in_pixels,width_in_millimeters,height_in_millimeters,min_installed_maps,max_installed_maps,root_visual,backing_stores,save_unders,root_depth,allowed_depths_len)
-    char *self
+    SV* self
     uint32_t root
     uint32_t default_colormap
     uint32_t white_pixel
@@ -404,7 +404,7 @@ new(self,root,default_colormap,white_pixel,black_pixel,current_input_masks,width
   PREINIT:
     XCBScreen *buf;
   CODE:
-    if(0!=strcmp(self,"XCBScreen")) Perl_croak(aTHX_ "%s: self is %s", "XCBScreen", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBScreen");
     New(0, buf, 1, XCBScreen);
     buf->root = root;
     buf->default_colormap = default_colormap;
@@ -429,7 +429,7 @@ new(self,root,default_colormap,white_pixel,black_pixel,current_input_masks,width
 MODULE = X11::XCB PACKAGE = XCBSetup_request
 XCBSetup_request *
 new(self,byte_order,protocol_major_version,protocol_minor_version,authorization_protocol_name_len,authorization_protocol_data_len)
-    char *self
+    SV* self
     uint8_t byte_order
     uint16_t protocol_major_version
     uint16_t protocol_minor_version
@@ -438,7 +438,7 @@ new(self,byte_order,protocol_major_version,protocol_minor_version,authorization_
   PREINIT:
     XCBSetup_request *buf;
   CODE:
-    if(0!=strcmp(self,"XCBSetup::request")) Perl_croak(aTHX_ "%s: self is %s", "XCBSetup::request", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBSetup::request");
     New(0, buf, 1, XCBSetup_request);
     buf->byte_order = byte_order;
     buf->protocol_major_version = protocol_major_version;
@@ -452,7 +452,7 @@ new(self,byte_order,protocol_major_version,protocol_minor_version,authorization_
 MODULE = X11::XCB PACKAGE = XCBSetup_failed
 XCBSetup_failed *
 new(self,status,reason_len,protocol_major_version,protocol_minor_version,length)
-    char *self
+    SV* self
     uint8_t status
     uint8_t reason_len
     uint16_t protocol_major_version
@@ -461,7 +461,7 @@ new(self,status,reason_len,protocol_major_version,protocol_minor_version,length)
   PREINIT:
     XCBSetup_failed *buf;
   CODE:
-    if(0!=strcmp(self,"XCBSetup::failed")) Perl_croak(aTHX_ "%s: self is %s", "XCBSetup::failed", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBSetup::failed");
     New(0, buf, 1, XCBSetup_failed);
     buf->status = status;
     buf->reason_len = reason_len;
@@ -475,13 +475,13 @@ new(self,status,reason_len,protocol_major_version,protocol_minor_version,length)
 MODULE = X11::XCB PACKAGE = XCBSetup_authenticate
 XCBSetup_authenticate *
 new(self,status,length)
-    char *self
+    SV* self
     uint8_t status
     uint16_t length
   PREINIT:
     XCBSetup_authenticate *buf;
   CODE:
-    if(0!=strcmp(self,"XCBSetup::authenticate")) Perl_croak(aTHX_ "%s: self is %s", "XCBSetup::authenticate", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBSetup::authenticate");
     New(0, buf, 1, XCBSetup_authenticate);
     buf->status = status;
     buf->length = length;
@@ -492,7 +492,7 @@ new(self,status,length)
 MODULE = X11::XCB PACKAGE = XCBSetup
 XCBSetup *
 new(self,status,protocol_major_version,protocol_minor_version,length,release_number,resource_id_base,resource_id_mask,motion_buffer_size,vendor_len,maximum_request_length,roots_len,pixmap_formats_len,image_byte_order,bitmap_format_bit_order,bitmap_format_scanline_unit,bitmap_format_scanline_pad,min_keycode,max_keycode)
-    char *self
+    SV* self
     uint8_t status
     uint16_t protocol_major_version
     uint16_t protocol_minor_version
@@ -514,7 +514,7 @@ new(self,status,protocol_major_version,protocol_minor_version,length,release_num
   PREINIT:
     XCBSetup *buf;
   CODE:
-    if(0!=strcmp(self,"XCBSetup")) Perl_croak(aTHX_ "%s: self is %s", "XCBSetup", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBSetup");
     New(0, buf, 1, XCBSetup);
     buf->status = status;
     buf->protocol_major_version = protocol_major_version;
@@ -541,14 +541,14 @@ new(self,status,protocol_major_version,protocol_minor_version,length,release_num
 MODULE = X11::XCB PACKAGE = XCBTimecoord
 XCBTimecoord *
 new(self,time,x,y)
-    char *self
+    SV* self
     uint32_t time
     uint16_t x
     uint16_t y
   PREINIT:
     XCBTimecoord *buf;
   CODE:
-    if(0!=strcmp(self,"XCBTimecoord")) Perl_croak(aTHX_ "%s: self is %s", "XCBTimecoord", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBTimecoord");
     New(0, buf, 1, XCBTimecoord);
     buf->time = time;
     buf->x = x;
@@ -590,13 +590,13 @@ y(self)
 MODULE = X11::XCB PACKAGE = XCBFontprop
 XCBFontprop *
 new(self,name,value)
-    char *self
+    SV* self
     uint32_t name
     uint32_t value
   PREINIT:
     XCBFontprop *buf;
   CODE:
-    if(0!=strcmp(self,"XCBFontprop")) Perl_croak(aTHX_ "%s: self is %s", "XCBFontprop", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBFontprop");
     New(0, buf, 1, XCBFontprop);
     buf->name = name;
     buf->value = value;
@@ -627,7 +627,7 @@ value(self)
 MODULE = X11::XCB PACKAGE = XCBCharinfo
 XCBCharinfo *
 new(self,left_side_bearing,right_side_bearing,character_width,ascent,descent,attributes)
-    char *self
+    SV* self
     uint16_t left_side_bearing
     uint16_t right_side_bearing
     uint16_t character_width
@@ -637,7 +637,7 @@ new(self,left_side_bearing,right_side_bearing,character_width,ascent,descent,att
   PREINIT:
     XCBCharinfo *buf;
   CODE:
-    if(0!=strcmp(self,"XCBCharinfo")) Perl_croak(aTHX_ "%s: self is %s", "XCBCharinfo", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBCharinfo");
     New(0, buf, 1, XCBCharinfo);
     buf->left_side_bearing = left_side_bearing;
     buf->right_side_bearing = right_side_bearing;
@@ -712,12 +712,12 @@ attributes(self)
 MODULE = X11::XCB PACKAGE = XCBStr
 XCBStr *
 new(self,name_len)
-    char *self
+    SV* self
     uint8_t name_len
   PREINIT:
     XCBStr *buf;
   CODE:
-    if(0!=strcmp(self,"XCBStr")) Perl_croak(aTHX_ "%s: self is %s", "XCBStr", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBStr");
     New(0, buf, 1, XCBStr);
     buf->name_len = name_len;
     RETVAL = buf;
@@ -727,7 +727,7 @@ new(self,name_len)
 MODULE = X11::XCB PACKAGE = XCBSegment
 XCBSegment *
 new(self,x1,y1,x2,y2)
-    char *self
+    SV* self
     uint16_t x1
     uint16_t y1
     uint16_t x2
@@ -735,7 +735,7 @@ new(self,x1,y1,x2,y2)
   PREINIT:
     XCBSegment *buf;
   CODE:
-    if(0!=strcmp(self,"XCBSegment")) Perl_croak(aTHX_ "%s: self is %s", "XCBSegment", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBSegment");
     New(0, buf, 1, XCBSegment);
     buf->x1 = x1;
     buf->y1 = y1;
@@ -788,7 +788,7 @@ y2(self)
 MODULE = X11::XCB PACKAGE = XCBColoritem
 XCBColoritem *
 new(self,pixel,red,green,blue,flags)
-    char *self
+    SV* self
     uint32_t pixel
     uint16_t red
     uint16_t green
@@ -797,7 +797,7 @@ new(self,pixel,red,green,blue,flags)
   PREINIT:
     XCBColoritem *buf;
   CODE:
-    if(0!=strcmp(self,"XCBColoritem")) Perl_croak(aTHX_ "%s: self is %s", "XCBColoritem", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBColoritem");
     New(0, buf, 1, XCBColoritem);
     buf->pixel = pixel;
     buf->red = red;
@@ -861,14 +861,14 @@ flags(self)
 MODULE = X11::XCB PACKAGE = XCBRgb
 XCBRgb *
 new(self,red,green,blue)
-    char *self
+    SV* self
     uint16_t red
     uint16_t green
     uint16_t blue
   PREINIT:
     XCBRgb *buf;
   CODE:
-    if(0!=strcmp(self,"XCBRgb")) Perl_croak(aTHX_ "%s: self is %s", "XCBRgb", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBRgb");
     New(0, buf, 1, XCBRgb);
     buf->red = red;
     buf->green = green;
@@ -910,13 +910,13 @@ blue(self)
 MODULE = X11::XCB PACKAGE = XCBHost
 XCBHost *
 new(self,family,address_len)
-    char *self
+    SV* self
     uint8_t family
     uint16_t address_len
   PREINIT:
     XCBHost *buf;
   CODE:
-    if(0!=strcmp(self,"XCBHost")) Perl_croak(aTHX_ "%s: self is %s", "XCBHost", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBHost");
     New(0, buf, 1, XCBHost);
     buf->family = family;
     buf->address_len = address_len;
@@ -4319,7 +4319,7 @@ get_modifier_mapping_reply(conn,sequence)
 MODULE = X11::XCB PACKAGE = XCBXinerama_screen_info
 XCBXinerama_screen_info *
 new(self,x_org,y_org,width,height)
-    char *self
+    SV* self
     uint16_t x_org
     uint16_t y_org
     uint16_t width
@@ -4327,7 +4327,7 @@ new(self,x_org,y_org,width,height)
   PREINIT:
     XCBXinerama_screen_info *buf;
   CODE:
-    if(0!=strcmp(self,"XCBXinerama::screen::info")) Perl_croak(aTHX_ "%s: self is %s", "XCBXinerama::screen::info", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBXinerama::screen::info");
     New(0, buf, 1, XCBXinerama_screen_info);
     buf->x_org = x_org;
     buf->y_org = y_org;

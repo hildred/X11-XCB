@@ -77,12 +77,12 @@ sub tmpl_struct {
 MODULE = X11::XCB PACKAGE = $name
 $name *
 $constructor(self,$param)
-    char *self
+    SV* self
 $param_decl
   PREINIT:
     $name *buf;
   CODE:
-    if(0!=strncmp(self,"$cname",8)) Perl_croak(aTHX_ "%s: self is %s", "$cname", self);
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "$cname");
     New(0, buf, 1, $name);
 $set_struct
     RETVAL = buf;
