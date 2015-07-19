@@ -82,7 +82,7 @@ $param_decl
   PREINIT:
     $name *buf;
   CODE:
-    if(0!=strcmp(self,"$cname")) Perl_croak(aTHX_ "%s: self is %s", "$cname", self);
+    if(0!=strncmp(self,"$cname",8)) Perl_croak(aTHX_ "%s: self is %s", "$cname", self);
     New(0, buf, 1, $name);
 $set_struct
     RETVAL = buf;
