@@ -11,9 +11,11 @@ typemap
 typedefs.h
 ppport.h
 XCB.inc
-XCB.o
+*.o
 XCB_xs.inc
 blib/
 inc/
 pm_to_blib
 *.swp
+listarray.c
+XCB.h

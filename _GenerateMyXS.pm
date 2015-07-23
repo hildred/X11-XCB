@@ -110,13 +110,84 @@ $name(self)
 __
 }
 
+sub parse_loop_{
+	my($name,$type,$count)=@_;
+	$type=~s/ \*$//;
+	my @a;
+	my $size;
+	push @a, << "__";
+    U32 ix_$_;
+    $_=mk$type(aTHX_ items,$count,&ix_$_,ax,"X11::XCB::$name","$_");
+    if(0==$_){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::$name","${_}");}
+__
+	join '',@a;
+}
+
+{
+my %codemap=(
+	'char *'	=>sub{my($name)=@_;"    $_ = SvPV(${_}_sv,${_}_len);"},
+	'XCBChar2b *'	=>sub{my($name)=@_;"    $_ = convert_SV_to_ucs2(${_}_sv,&${_}_len);"},
+	'XCBArc *'	=>*parse_loop_,
+	'XCBRectangle *'=>*parse_loop_,
+	'XCBPoint *'	=>*parse_loop_,
+	'XCBSegment *'	=>*parse_loop_,
+);
+my %vmap=(
+	'char *'=>[s=>0],
+	'XCBChar2b *'=>[s=>0],
+	#'XCBArc *'=>[a=>1],
+	#'XCBRectangle *'=>[a=>1],
+	#'XCBSegment *'=>[a=>1],
+	#'XCBPoint *'=>[a=>1],
+	'intArray8 *'=>0,
+	#'void *'=>[a=>0],
+);
 sub tmpl_request {
-    my ($name, $cookie, $params, $types, $xcb_cast, $cleanups) = @_;
+    my $name=shift;
+    my ($cookie, $params, $types, $xcb_cast, $cleanups) = @_;
+    return if grep { defined $types->{$_} and $types->{$_} =~ /^void/} @$params; ### void types must be handled by hand.
+    #return if grep { defined $types->{$_} and $types->{$_} =~ /\.\.\./} @$params;
 
-    my $param = join ',', ('conn', @$params);
-    my @param = grep { $_ ne '...' } @$params;
+    my %param = map { my $a=$_;$a=~s/_len$//; $a,1} grep { /_len$/ } @$params;
+    my $param = join ',', ('conn', map {
+	    $param{$_}?(
+		    $vmap{$types->{$_}}?$_.'_'.$vmap{$types->{$_}}[0].'v':$_.',...'
+	    ):$_
+    } grep { !/_len$/ } @$params);
+    my @param = map {
+        $a=$_;
+	if($a=~s/_len$//){
+	    $param{$_}?(
+		    $vmap{$types->{$_}}?
+		    	$_
+		    :'ix_'.$a
+	    ):$_
+	}else{
+	    $_
+	}
+    } grep { $_ ne '...' } @$params;
 
-    my $param_decl = indent { "$types->{$_} $_" } "\n", @param;
+    #   $types->{$_.'_svx'}='SV*' foreach (keys %param);
+    $types->{$_.'_sv'}='SV*' foreach (keys %param);
+    $types->{$_.'_av'}='AV*' foreach (keys %param);
+    $types->{$_.'_hv'}='HV*' foreach (keys %param);
+    if(defined($types->{string_len})&&	'uint8_t'  eq $types->{string_len} ){$types->{string_len}='STRLEN';}
+    if(defined($types->{string_len})&&	'int'	   eq $types->{string_len} ){$types->{string_len}='STRLEN';}
+    if(defined($types->{name_len})&&	'uint16_t' eq $types->{name_len}   ){$types->{name_len}='STRLEN';}
+    if(defined($types->{pattern_len})&& 'uint16_t' eq $types->{pattern_len}){$types->{pattern_len}='STRLEN';}
+    my $param_decl = indent { "$types->{$_} $_" } "\n", map {
+	    $param{$_}?(
+		    $vmap{$types->{$_}}?$_.'_'.$vmap{$types->{$_}}[0].'v':$_
+	    ):$_
+    } grep { !/_len$/ } @param;
+    my $len_decl   = indent { "$types->{$_} $_;\n    $types->{${_}.'_len'} ${_}_len;" } "\n", grep {
+	    $param{$_}?(
+		    $vmap{$types->{$_}}?
+		    	1
+		    :0
+	    ):1
+    } keys %param;
+    my $code_decl  = join "$_", map {($codemap{$types->{$_}}?$codemap{$types->{$_}}:sub{"//error map for $types->{$_} missing\n#error $_"})->($name,$types->{$_},scalar(@param)-1)} sort keys %param;
 
     # XXX should be "$prefix$name", but $name has already a prefix like xinerama_
     my $xcb_name = "xcb_$name";
@@ -133,9 +204,11 @@ $name($param)
     XCBConnection *conn
 $param_decl
   PREINIT:
+$len_decl
     HV * hash;
     $cookie cookie;
   CODE:
+$code_decl
     cookie = $xcb_name($xcb_param);
 
     hash = newHV();
@@ -146,7 +219,7 @@ $cleanup
     RETVAL
 
 __
-}
+}}
 
 sub on_field {
     my ($fields, $types) = @_;
@@ -247,13 +320,19 @@ sub do_requests {
 
         my $type = $xcbtype{$x_type} || perl_name $x_type;
 
-        if ($type =~ /^uint(?:8|16|32)_t$/) {
-            $xcb_cast{$param} = " (const $type*)";
-            $type = 'intArray'
-        }
+	if ($type =~ /^uint8_t$/) {
+	    $xcb_cast{$param} = " (const $type*)";
+	    $type = 'intArray8'
+	}elsif ($type =~ /^uint16_t$/) {
+	    $xcb_cast{$param} = " (const $type*)";
+	    $type = 'intArray16'
+	}elsif ($type =~ /^uint32_t$/) {
+	    $xcb_cast{$param} = " (const $type*)";
+	    $type = 'intArray32'
+	}
 
         # We use char* instead of void* to be able to use pack() in the perl part
-        $type = 'char' if $type eq 'void';
+	#$type = 'char' if $type eq 'void'; ## this breaks when we get real strings.
 
         $type{$param} = "$type *";
         $type{$param . '_len'} = 'int' if $push_len;
@@ -273,7 +352,9 @@ sub do_requests {
         push @param, '...';
 
         $type{$mask} = xcb_type $type;
-        $type{$list} = 'intArray *';
+	$type=~s/CARD([0-9]+)/intArray$1 */;
+        $type{$list} = $type;
+	#$type{$list} = 'intArray *';
 
         push @cleanup, $list;
     };
@@ -439,7 +520,13 @@ sub generate {
 
     print OUTTM << '__';
 XCBConnection *             T_PTROBJ_MG
-intArray *                  T_ARRAY
+intArray8 *                 T_ARRAY
+intArray16 *                T_ARRAY
+intArray32 *                T_ARRAY
+XCBSegment *                T_ARRAY
+intArray8                   T_U_CHAR
+intArray16                  T_U_SHORT
+intArray32                  T_UV
 X11_XCB_ICCCM_WMHints *     T_PTROBJ
 X11_XCB_ICCCM_SizeHints *   T_PTROBJ
 uint8_t                     T_U_CHAR
@@ -609,7 +696,7 @@ sub cname($) {
 
 sub indent (&$@) {
     my ($code, $join, @input) = @_;
-    my $indent = ' ' x ($indent_level * 4);
+    my $indent = '    ' x ($indent_level);
 
     return join $join, map { $indent . $code->() } @input;
 }

@@ -9,6 +9,8 @@
 #include "typedefs.h"
 #include "xs_object_magic.h"
 
+#include "XCB.h"
+
 typedef xcb_connection_t XCBConnection;
 
 /* copied from xcb-util */
@@ -88,13 +90,25 @@ uint32_t win_gravity;
 
 #include "XCB.inc"
 
-typedef int intArray;
+typedef uint8_t  intArray8;
+typedef uint16_t intArray16;
+typedef uint32_t intArray32;
 
-intArray *intArrayPtr(int num) {
-        intArray *array;
+intArray8 *intArray8Ptr(int num) {
+        intArray8 *array;
+        New(0, array, num, intArray8);
+        return array;
+}
 
-        New(0, array, num, intArray);
+intArray16 *intArray16Ptr(int num) {
+        intArray16 *array;
+        New(0, array, num, intArray16);
+        return array;
+}
 
+intArray32 *intArray32Ptr(int num) {
+        intArray32 *array;
+        New(0, array, num, intArray32);
         return array;
 }
 
@@ -150,7 +164,6 @@ _new_event_object(xcb_generic_event_t *event)
 
     return sv_bless(newRV_noinc((SV*)hash), gv_stashpv(objname, 1));
 }
-
 
 MODULE = X11::XCB PACKAGE = X11::XCB
 
@@ -298,3 +311,26 @@ flush(conn)
 INCLUDE: XCB_util.inc
 
 INCLUDE: XCB_xs.inc
+
+HV *
+change_property(conn,mode,window,property,type,format,data_len,data)
+    XCBConnection *conn
+    uint8_t mode
+    uint32_t window
+    uint32_t property
+    uint32_t type
+    uint8_t format
+    uint32_t data_len
+    char * data
+  PREINIT:
+    HV * hash;
+    xcb_void_cookie_t cookie;
+  CODE:
+    cookie = xcb_change_property(conn, mode, window, property, type, format, data_len, data);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+  OUTPUT:
+    RETVAL
+

@@ -939,11 +939,13 @@ create_window(conn,depth,wid,parent,x,y,width,height,border_width,class,visual,v
     uint16_t class
     uint32_t visual
     uint32_t value_mask
-    intArray * value_list
+    intArray32 * value_list
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_create_window(conn, depth, wid, parent, x, y, width, height, border_width, class, visual, value_mask, value_list);
 
     hash = newHV();
@@ -958,11 +960,13 @@ change_window_attributes(conn,window,value_mask,value_list,...)
     XCBConnection *conn
     uint32_t window
     uint32_t value_mask
-    intArray * value_list
+    intArray32 * value_list
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_change_window_attributes(conn, window, value_mask, value_list);
 
     hash = newHV();
@@ -977,9 +981,11 @@ get_window_attributes(conn,window)
     XCBConnection *conn
     uint32_t window
   PREINIT:
+
     HV * hash;
     xcb_get_window_attributes_cookie_t cookie;
   CODE:
+
     cookie = xcb_get_window_attributes(conn, window);
 
     hash = newHV();
@@ -994,9 +1000,11 @@ destroy_window(conn,window)
     XCBConnection *conn
     uint32_t window
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_destroy_window(conn, window);
 
     hash = newHV();
@@ -1011,9 +1019,11 @@ destroy_subwindows(conn,window)
     XCBConnection *conn
     uint32_t window
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_destroy_subwindows(conn, window);
 
     hash = newHV();
@@ -1029,9 +1039,11 @@ change_save_set(conn,mode,window)
     uint8_t mode
     uint32_t window
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_change_save_set(conn, mode, window);
 
     hash = newHV();
@@ -1049,9 +1061,11 @@ reparent_window(conn,window,parent,x,y)
     uint16_t x
     uint16_t y
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_reparent_window(conn, window, parent, x, y);
 
     hash = newHV();
@@ -1066,9 +1080,11 @@ map_window(conn,window)
     XCBConnection *conn
     uint32_t window
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_map_window(conn, window);
 
     hash = newHV();
@@ -1083,9 +1099,11 @@ map_subwindows(conn,window)
     XCBConnection *conn
     uint32_t window
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_map_subwindows(conn, window);
 
     hash = newHV();
@@ -1100,9 +1118,11 @@ unmap_window(conn,window)
     XCBConnection *conn
     uint32_t window
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_unmap_window(conn, window);
 
     hash = newHV();
@@ -1117,9 +1137,11 @@ unmap_subwindows(conn,window)
     XCBConnection *conn
     uint32_t window
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_unmap_subwindows(conn, window);
 
     hash = newHV();
@@ -1134,11 +1156,13 @@ configure_window(conn,window,value_mask,value_list,...)
     XCBConnection *conn
     uint32_t window
     uint16_t value_mask
-    intArray * value_list
+    intArray32 * value_list
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_configure_window(conn, window, value_mask, value_list);
 
     hash = newHV();
@@ -1154,9 +1178,11 @@ circulate_window(conn,direction,window)
     uint8_t direction
     uint32_t window
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_circulate_window(conn, direction, window);
 
     hash = newHV();
@@ -1171,9 +1197,11 @@ get_geometry(conn,drawable)
     XCBConnection *conn
     uint32_t drawable
   PREINIT:
+
     HV * hash;
     xcb_get_geometry_cookie_t cookie;
   CODE:
+
     cookie = xcb_get_geometry(conn, drawable);
 
     hash = newHV();
@@ -1188,9 +1216,11 @@ query_tree(conn,window)
     XCBConnection *conn
     uint32_t window
   PREINIT:
+
     HV * hash;
     xcb_query_tree_cookie_t cookie;
   CODE:
+
     cookie = xcb_query_tree(conn, window);
 
     hash = newHV();
@@ -1201,15 +1231,17 @@ query_tree(conn,window)
     RETVAL
 
 HV *
-intern_atom(conn,only_if_exists,name_len,name)
+intern_atom(conn,only_if_exists,name_sv)
     XCBConnection *conn
     int only_if_exists
-    uint16_t name_len
-    char * name
+    SV* name_sv
   PREINIT:
+    char * name;
+    STRLEN name_len;
     HV * hash;
     xcb_intern_atom_cookie_t cookie;
   CODE:
+    name = SvPV(name_sv,name_len);
     cookie = xcb_intern_atom(conn, only_if_exists, name_len, name);
 
     hash = newHV();
@@ -1224,33 +1256,12 @@ get_atom_name(conn,atom)
     XCBConnection *conn
     uint32_t atom
   PREINIT:
+
     HV * hash;
     xcb_get_atom_name_cookie_t cookie;
   CODE:
+
     cookie = xcb_get_atom_name(conn, atom);
-
-    hash = newHV();
-    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
-    RETVAL = hash;
-
-  OUTPUT:
-    RETVAL
-
-HV *
-change_property(conn,mode,window,property,type,format,data_len,data)
-    XCBConnection *conn
-    uint8_t mode
-    uint32_t window
-    uint32_t property
-    uint32_t type
-    uint8_t format
-    uint32_t data_len
-    char * data
-  PREINIT:
-    HV * hash;
-    xcb_void_cookie_t cookie;
-  CODE:
-    cookie = xcb_change_property(conn, mode, window, property, type, format, data_len, data);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -1265,9 +1276,11 @@ delete_property(conn,window,property)
     uint32_t window
     uint32_t property
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_delete_property(conn, window, property);
 
     hash = newHV();
@@ -1287,9 +1300,11 @@ get_property(conn,delete,window,property,type,long_offset,long_length)
     uint32_t long_offset
     uint32_t long_length
   PREINIT:
+
     HV * hash;
     xcb_get_property_cookie_t cookie;
   CODE:
+
     cookie = xcb_get_property(conn, delete, window, property, type, long_offset, long_length);
 
     hash = newHV();
@@ -1304,9 +1319,11 @@ list_properties(conn,window)
     XCBConnection *conn
     uint32_t window
   PREINIT:
+
     HV * hash;
     xcb_list_properties_cookie_t cookie;
   CODE:
+
     cookie = xcb_list_properties(conn, window);
 
     hash = newHV();
@@ -1323,9 +1340,11 @@ set_selection_owner(conn,owner,selection,time)
     uint32_t selection
     uint32_t time
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_set_selection_owner(conn, owner, selection, time);
 
     hash = newHV();
@@ -1340,9 +1359,11 @@ get_selection_owner(conn,selection)
     XCBConnection *conn
     uint32_t selection
   PREINIT:
+
     HV * hash;
     xcb_get_selection_owner_cookie_t cookie;
   CODE:
+
     cookie = xcb_get_selection_owner(conn, selection);
 
     hash = newHV();
@@ -1361,9 +1382,11 @@ convert_selection(conn,requestor,selection,target,property,time)
     uint32_t property
     uint32_t time
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_convert_selection(conn, requestor, selection, target, property, time);
 
     hash = newHV();
@@ -1381,9 +1404,11 @@ send_event(conn,propagate,destination,event_mask,event)
     uint32_t event_mask
     char * event
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_send_event(conn, propagate, destination, event_mask, event);
 
     hash = newHV();
@@ -1405,9 +1430,11 @@ grab_pointer(conn,owner_events,grab_window,event_mask,pointer_mode,keyboard_mode
     uint32_t cursor
     uint32_t time
   PREINIT:
+
     HV * hash;
     xcb_grab_pointer_cookie_t cookie;
   CODE:
+
     cookie = xcb_grab_pointer(conn, owner_events, grab_window, event_mask, pointer_mode, keyboard_mode, confine_to, cursor, time);
 
     hash = newHV();
@@ -1422,9 +1449,11 @@ ungrab_pointer(conn,time)
     XCBConnection *conn
     uint32_t time
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_ungrab_pointer(conn, time);
 
     hash = newHV();
@@ -1447,9 +1476,11 @@ grab_button(conn,owner_events,grab_window,event_mask,pointer_mode,keyboard_mode,
     uint8_t button
     uint16_t modifiers
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_grab_button(conn, owner_events, grab_window, event_mask, pointer_mode, keyboard_mode, confine_to, cursor, button, modifiers);
 
     hash = newHV();
@@ -1466,9 +1497,11 @@ ungrab_button(conn,button,grab_window,modifiers)
     uint32_t grab_window
     uint16_t modifiers
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_ungrab_button(conn, button, grab_window, modifiers);
 
     hash = newHV();
@@ -1485,9 +1518,11 @@ change_active_pointer_grab(conn,cursor,time,event_mask)
     uint32_t time
     uint16_t event_mask
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_change_active_pointer_grab(conn, cursor, time, event_mask);
 
     hash = newHV();
@@ -1506,9 +1541,11 @@ grab_keyboard(conn,owner_events,grab_window,time,pointer_mode,keyboard_mode)
     uint8_t pointer_mode
     uint8_t keyboard_mode
   PREINIT:
+
     HV * hash;
     xcb_grab_keyboard_cookie_t cookie;
   CODE:
+
     cookie = xcb_grab_keyboard(conn, owner_events, grab_window, time, pointer_mode, keyboard_mode);
 
     hash = newHV();
@@ -1523,9 +1560,11 @@ ungrab_keyboard(conn,time)
     XCBConnection *conn
     uint32_t time
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_ungrab_keyboard(conn, time);
 
     hash = newHV();
@@ -1545,9 +1584,11 @@ grab_key(conn,owner_events,grab_window,modifiers,key,pointer_mode,keyboard_mode)
     uint8_t pointer_mode
     uint8_t keyboard_mode
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_grab_key(conn, owner_events, grab_window, modifiers, key, pointer_mode, keyboard_mode);
 
     hash = newHV();
@@ -1564,9 +1605,11 @@ ungrab_key(conn,key,grab_window,modifiers)
     uint32_t grab_window
     uint16_t modifiers
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_ungrab_key(conn, key, grab_window, modifiers);
 
     hash = newHV();
@@ -1582,9 +1625,11 @@ allow_events(conn,mode,time)
     uint8_t mode
     uint32_t time
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_allow_events(conn, mode, time);
 
     hash = newHV();
@@ -1599,9 +1644,11 @@ grab_server(conn)
     XCBConnection *conn
 
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_grab_server(conn);
 
     hash = newHV();
@@ -1616,9 +1663,11 @@ ungrab_server(conn)
     XCBConnection *conn
 
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_ungrab_server(conn);
 
     hash = newHV();
@@ -1633,9 +1682,11 @@ query_pointer(conn,window)
     XCBConnection *conn
     uint32_t window
   PREINIT:
+
     HV * hash;
     xcb_query_pointer_cookie_t cookie;
   CODE:
+
     cookie = xcb_query_pointer(conn, window);
 
     hash = newHV();
@@ -1652,9 +1703,11 @@ get_motion_events(conn,window,start,stop)
     uint32_t start
     uint32_t stop
   PREINIT:
+
     HV * hash;
     xcb_get_motion_events_cookie_t cookie;
   CODE:
+
     cookie = xcb_get_motion_events(conn, window, start, stop);
 
     hash = newHV();
@@ -1672,9 +1725,11 @@ translate_coordinates(conn,src_window,dst_window,src_x,src_y)
     uint16_t src_x
     uint16_t src_y
   PREINIT:
+
     HV * hash;
     xcb_translate_coordinates_cookie_t cookie;
   CODE:
+
     cookie = xcb_translate_coordinates(conn, src_window, dst_window, src_x, src_y);
 
     hash = newHV();
@@ -1696,9 +1751,11 @@ warp_pointer(conn,src_window,dst_window,src_x,src_y,src_width,src_height,dst_x,d
     uint16_t dst_x
     uint16_t dst_y
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_warp_pointer(conn, src_window, dst_window, src_x, src_y, src_width, src_height, dst_x, dst_y);
 
     hash = newHV();
@@ -1715,9 +1772,11 @@ set_input_focus(conn,revert_to,focus,time)
     uint32_t focus
     uint32_t time
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_set_input_focus(conn, revert_to, focus, time);
 
     hash = newHV();
@@ -1732,9 +1791,11 @@ get_input_focus(conn)
     XCBConnection *conn
 
   PREINIT:
+
     HV * hash;
     xcb_get_input_focus_cookie_t cookie;
   CODE:
+
     cookie = xcb_get_input_focus(conn);
 
     hash = newHV();
@@ -1749,9 +1810,11 @@ query_keymap(conn)
     XCBConnection *conn
 
   PREINIT:
+
     HV * hash;
     xcb_query_keymap_cookie_t cookie;
   CODE:
+
     cookie = xcb_query_keymap(conn);
 
     hash = newHV();
@@ -1762,15 +1825,17 @@ query_keymap(conn)
     RETVAL
 
 HV *
-open_font(conn,fid,name_len,name)
+open_font(conn,fid,name_sv)
     XCBConnection *conn
     uint32_t fid
-    uint16_t name_len
-    char * name
+    SV* name_sv
   PREINIT:
+    char * name;
+    STRLEN name_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+    name = SvPV(name_sv,name_len);
     cookie = xcb_open_font(conn, fid, name_len, name);
 
     hash = newHV();
@@ -1785,9 +1850,11 @@ close_font(conn,font)
     XCBConnection *conn
     uint32_t font
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_close_font(conn, font);
 
     hash = newHV();
@@ -1802,9 +1869,11 @@ query_font(conn,font)
     XCBConnection *conn
     uint32_t font
   PREINIT:
+
     HV * hash;
     xcb_query_font_cookie_t cookie;
   CODE:
+
     cookie = xcb_query_font(conn, font);
 
     hash = newHV();
@@ -1815,15 +1884,17 @@ query_font(conn,font)
     RETVAL
 
 HV *
-query_text_extents(conn,font,string_len,string)
+query_text_extents(conn,font,string_sv)
     XCBConnection *conn
     uint32_t font
-    int string_len
-    XCBChar2b * string
+    SV* string_sv
   PREINIT:
+    XCBChar2b * string;
+    STRLEN string_len;
     HV * hash;
     xcb_query_text_extents_cookie_t cookie;
   CODE:
+    string = convert_SV_to_ucs2(string_sv,&string_len);
     cookie = xcb_query_text_extents(conn, font, string_len, string);
 
     hash = newHV();
@@ -1834,15 +1905,17 @@ query_text_extents(conn,font,string_len,string)
     RETVAL
 
 HV *
-list_fonts(conn,max_names,pattern_len,pattern)
+list_fonts(conn,max_names,pattern_sv)
     XCBConnection *conn
     uint16_t max_names
-    uint16_t pattern_len
-    char * pattern
+    SV* pattern_sv
   PREINIT:
+    char * pattern;
+    STRLEN pattern_len;
     HV * hash;
     xcb_list_fonts_cookie_t cookie;
   CODE:
+    pattern = SvPV(pattern_sv,pattern_len);
     cookie = xcb_list_fonts(conn, max_names, pattern_len, pattern);
 
     hash = newHV();
@@ -1853,15 +1926,17 @@ list_fonts(conn,max_names,pattern_len,pattern)
     RETVAL
 
 HV *
-list_fonts_with_info(conn,max_names,pattern_len,pattern)
+list_fonts_with_info(conn,max_names,pattern_sv)
     XCBConnection *conn
     uint16_t max_names
-    uint16_t pattern_len
-    char * pattern
+    SV* pattern_sv
   PREINIT:
+    char * pattern;
+    STRLEN pattern_len;
     HV * hash;
     xcb_list_fonts_with_info_cookie_t cookie;
   CODE:
+    pattern = SvPV(pattern_sv,pattern_len);
     cookie = xcb_list_fonts_with_info(conn, max_names, pattern_len, pattern);
 
     hash = newHV();
@@ -1877,9 +1952,11 @@ set_font_path(conn,font_qty,font)
     uint16_t font_qty
     XCBStr * font
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_set_font_path(conn, font_qty, font);
 
     hash = newHV();
@@ -1894,9 +1971,11 @@ get_font_path(conn)
     XCBConnection *conn
 
   PREINIT:
+
     HV * hash;
     xcb_get_font_path_cookie_t cookie;
   CODE:
+
     cookie = xcb_get_font_path(conn);
 
     hash = newHV();
@@ -1915,9 +1994,11 @@ create_pixmap(conn,depth,pid,drawable,width,height)
     uint16_t width
     uint16_t height
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_create_pixmap(conn, depth, pid, drawable, width, height);
 
     hash = newHV();
@@ -1932,9 +2013,11 @@ free_pixmap(conn,pixmap)
     XCBConnection *conn
     uint32_t pixmap
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_free_pixmap(conn, pixmap);
 
     hash = newHV();
@@ -1950,11 +2033,13 @@ create_gc(conn,cid,drawable,value_mask,value_list,...)
     uint32_t cid
     uint32_t drawable
     uint32_t value_mask
-    intArray * value_list
+    intArray32 * value_list
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_create_gc(conn, cid, drawable, value_mask, value_list);
 
     hash = newHV();
@@ -1969,11 +2054,13 @@ change_gc(conn,gc,value_mask,value_list,...)
     XCBConnection *conn
     uint32_t gc
     uint32_t value_mask
-    intArray * value_list
+    intArray32 * value_list
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_change_gc(conn, gc, value_mask, value_list);
 
     hash = newHV();
@@ -1990,9 +2077,11 @@ copy_gc(conn,src_gc,dst_gc,value_mask)
     uint32_t dst_gc
     uint32_t value_mask
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_copy_gc(conn, src_gc, dst_gc, value_mask);
 
     hash = newHV();
@@ -2003,17 +2092,27 @@ copy_gc(conn,src_gc,dst_gc,value_mask)
     RETVAL
 
 HV *
-set_dashes(conn,gc,dash_offset,dashes_len,dashes)
+set_dashes(conn,gc,dash_offset,dashes_av)
     XCBConnection *conn
     uint32_t gc
     uint16_t dash_offset
-    uint16_t dashes_len
-    intArray * dashes
+    AV* dashes_av
   PREINIT:
+    intArray8 * dashes;
+    uint16_t ix_dashes;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    cookie = xcb_set_dashes(conn, gc, dash_offset, dashes_len,  (const uint8_t*)dashes);
+    ix_dashes = 1+av_len(dashes_av);
+    if(1>ix_dashes){Perl_croak(aTHX_ "%s: %s is empty","X11::XCB::set_dashes","dashes_av");}
+    dashes = malloc(ix_dashes*sizeof(char));
+    {int i;for(i=0;i<ix_dashes;i++){
+	SV** this=av_fetch(dashes_av,i,0);
+	if(0==this){Perl_croak(aTHX_ "%s: %s null pointer","X11::XCB::set_dashes","dashes_av");}
+	SvGETMAGIC(*this);
+	dashes[i]=SvUV(*this);
+    }}
+    cookie = xcb_set_dashes(conn, gc, dash_offset, ix_dashes, dashes);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2023,19 +2122,23 @@ set_dashes(conn,gc,dash_offset,dashes_len,dashes)
     RETVAL
 
 HV *
-set_clip_rectangles(conn,ordering,gc,clip_x_origin,clip_y_origin,rectangles_len,rectangles)
+set_clip_rectangles(conn,ordering,gc,clip_x_origin,clip_y_origin,rectangles,...)
     XCBConnection *conn
     uint8_t ordering
     uint32_t gc
     uint16_t clip_x_origin
     uint16_t clip_y_origin
-    int rectangles_len
     XCBRectangle * rectangles
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    cookie = xcb_set_clip_rectangles(conn, ordering, gc, clip_x_origin, clip_y_origin, rectangles_len, rectangles);
+    U32 ix_rectangles;
+    rectangles=mkXCBRectangle(aTHX_ items,5,&ix_rectangles,ax,"X11::XCB::set_clip_rectangles","rectangles");
+    if(0==rectangles){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::set_clip_rectangles","rectangles");}
+
+    cookie = xcb_set_clip_rectangles(conn, ordering, gc, clip_x_origin, clip_y_origin, ix_rectangles, rectangles);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2049,9 +2152,11 @@ free_gc(conn,gc)
     XCBConnection *conn
     uint32_t gc
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_free_gc(conn, gc);
 
     hash = newHV();
@@ -2071,9 +2176,11 @@ clear_area(conn,exposures,window,x,y,width,height)
     uint16_t width
     uint16_t height
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_clear_area(conn, exposures, window, x, y, width, height);
 
     hash = newHV();
@@ -2096,9 +2203,11 @@ copy_area(conn,src_drawable,dst_drawable,gc,src_x,src_y,dst_x,dst_y,width,height
     uint16_t width
     uint16_t height
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_copy_area(conn, src_drawable, dst_drawable, gc, src_x, src_y, dst_x, dst_y, width, height);
 
     hash = newHV();
@@ -2122,9 +2231,11 @@ copy_plane(conn,src_drawable,dst_drawable,gc,src_x,src_y,dst_x,dst_y,width,heigh
     uint16_t height
     uint32_t bit_plane
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_copy_plane(conn, src_drawable, dst_drawable, gc, src_x, src_y, dst_x, dst_y, width, height, bit_plane);
 
     hash = newHV();
@@ -2135,18 +2246,22 @@ copy_plane(conn,src_drawable,dst_drawable,gc,src_x,src_y,dst_x,dst_y,width,heigh
     RETVAL
 
 HV *
-poly_point(conn,coordinate_mode,drawable,gc,points_len,points)
+poly_point(conn,coordinate_mode,drawable,gc,points,...)
     XCBConnection *conn
     uint8_t coordinate_mode
     uint32_t drawable
     uint32_t gc
-    int points_len
     XCBPoint * points
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    cookie = xcb_poly_point(conn, coordinate_mode, drawable, gc, points_len, points);
+    U32 ix_points;
+    points=mkXCBPoint(aTHX_ items,4,&ix_points,ax,"X11::XCB::poly_point","points");
+    if(0==points){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::poly_point","points");}
+
+    cookie = xcb_poly_point(conn, coordinate_mode, drawable, gc, ix_points, points);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2156,18 +2271,22 @@ poly_point(conn,coordinate_mode,drawable,gc,points_len,points)
     RETVAL
 
 HV *
-poly_line(conn,coordinate_mode,drawable,gc,points_len,points)
+poly_line(conn,coordinate_mode,drawable,gc,points,...)
     XCBConnection *conn
     uint8_t coordinate_mode
     uint32_t drawable
     uint32_t gc
-    int points_len
     XCBPoint * points
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    cookie = xcb_poly_line(conn, coordinate_mode, drawable, gc, points_len, points);
+    U32 ix_points;
+    points=mkXCBPoint(aTHX_ items,4,&ix_points,ax,"X11::XCB::poly_line","points");
+    if(0==points){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::poly_line","points");}
+
+    cookie = xcb_poly_line(conn, coordinate_mode, drawable, gc, ix_points, points);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2177,17 +2296,21 @@ poly_line(conn,coordinate_mode,drawable,gc,points_len,points)
     RETVAL
 
 HV *
-poly_segment(conn,drawable,gc,segments_len,segments)
+poly_segment(conn,drawable,gc,segments,...)
     XCBConnection *conn
     uint32_t drawable
     uint32_t gc
-    int segments_len
     XCBSegment * segments
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    cookie = xcb_poly_segment(conn, drawable, gc, segments_len, segments);
+    U32 ix_segments;
+    segments=mkXCBSegment(aTHX_ items,3,&ix_segments,ax,"X11::XCB::poly_segment","segments");
+    if(0==segments){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::poly_segment","segments");}
+
+    cookie = xcb_poly_segment(conn, drawable, gc, ix_segments, segments);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2201,95 +2324,41 @@ poly_rectangle(conn,drawable,gc,...)
     XCBConnection *conn
     uint32_t drawable
     uint32_t gc
-  PROTOTYPE: $$$@
   PREINIT:
-    int rectangles_len, i, j;
-    XCBRectangle* rectangles;
+    XCBRectangle * rectangles;
+
     HV * hash;
     xcb_void_cookie_t cookie;
-    SV* this;
-    SV** that;
-    AV* this_;
-  INIT:
-    //int dummy;
-    //printf("debug3:   '%s'\n",SvPV(ST(0),dummy));
-    //printf("debug3:   '%s'\n",SvPV(ST(1),dummy));
-    //printf("debug3:   '%s'\n",SvPV(ST(2),dummy));
-    rectangles_len = items-3;
-    if(1>rectangles_len){Perl_croak(aTHX_ "%s: %s is empty","X11::XCB::poly_rectangle","rectarry");}
-    rectangles = malloc(rectangles_len*sizeof(XCBRectangle));
-    if(0==rectangles){Perl_croak(aTHX_ "%s: %s malloc failed","X11::XCB::poly_rectangle","rectarry");}
-    for(i=0;i<rectangles_len;i++){
-	this=ST(i+3);
-	//printf("debug1: %d\n",i);
-	//printf("debug1: %d\n",i);
-	if (SvROK(this) ){
-		if (SvTYPE(SvRV(this)) == SVt_PVAV){
-			this_ = (AV*)SvRV(this);
-			if(3!=av_len((AV*)this_)){Perl_croak(aTHX_ "%s: rectangles must have four dimensions","X11::XCB::poly_rectangle");}
-			for(j=0;j<4;j++){
-				that=av_fetch(this_,j,0);
-				//printf("debug2:  %d\n",j);
-				if(0==that){Perl_croak(aTHX_ "%s: %s null pointer","X11::XCB::poly_rectangle","rectarry");}
-				//SvGETMAGIC(*that);
-				//printf("debug3:   '%s'\n",SvPV(*that,dummy));
-				//printf("debug3:   %d\n",SvNV(*that));
-				//printf("debug3:   %u\n",SvIV(*that));
-				//printf("debug3:   %u\n",SvUV(*that));
-				//printf("debug4:    %p,%p\n",*that,that);
-				switch(j){
-					case 0: rectangles[i].x=SvUV(*that);break;
-					case 1: rectangles[i].y=SvUV(*that);break;
-					case 2: rectangles[i].width=SvUV(*that);break;
-					case 3: rectangles[i].height=SvUV(*that);break;
-					default: Perl_croak(aTHX_ "this should not happen");break;
-				}
-			}
-		}else if (SvTYPE(SvRV(this)) == SVt_PVHV){
-			char *param[4]={"x","y","width","height"};
-			this_ = (AV*)SvRV(this);
-			for(j=0;j<4;j++){
-				that=hv_fetch((HV*)this_,param[j],strlen(param[j]),0);
-				if(0==that){Perl_croak(aTHX_ "%s: %s->%s is missing","X11::XCB::poly_rectangle","rectarry",param[j]);}
-				//SvGETMAGIC(*that);
-				switch(j){
-					case 0: rectangles[i].x=SvUV(*that);break;
-					case 1: rectangles[i].y=SvUV(*that);break;
-					case 2: rectangles[i].width=SvUV(*that);break;
-					case 3: rectangles[i].height=SvUV(*that);break;
-					default: Perl_croak(aTHX_ "this should not happen");break;
-				}
-			}
-		}else{
-			Perl_croak(aTHX_ "%s: %s is not an ARRAY or HASH reference", "X11::XCB::poly_rectangle", "rectarry");
-		}
-	}else{
-		Perl_croak(aTHX_ "%s: %s is missing", "X11::XCB::poly_rectangle", "rectarry");
-	}
-    }
   CODE:
-    cookie = xcb_poly_rectangle(conn, drawable, gc, rectangles_len, rectangles);
-    //printf("debug5:     %u,%u,%u,%u,%u\n",conn, drawable, gc, rectangles_len, rectangles);
-    free(rectangles);
+    U32 ix_rectangles;
+    rectangles=mkXCBRectangle(aTHX_ items,3,&ix_rectangles,ax,"X11::XCB::poly_rectangle","rectangles");
+    if(0==rectangles){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::poly_rectangle","rectangles");}
+
+    cookie = xcb_poly_rectangle(conn, drawable, gc, ix_rectangles, rectangles);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
     RETVAL = hash;
+    free(rectangles);
   OUTPUT:
     RETVAL
 
 HV *
-poly_arc(conn,drawable,gc,arcs_len,arcs)
+poly_arc(conn,drawable,gc,arcs,...)
     XCBConnection *conn
     uint32_t drawable
     uint32_t gc
-    int arcs_len
     XCBArc * arcs
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    cookie = xcb_poly_arc(conn, drawable, gc, arcs_len, arcs);
+    U32 ix_arcs;
+    arcs=mkXCBArc(aTHX_ items,3,&ix_arcs,ax,"X11::XCB::poly_arc","arcs");
+    if(0==arcs){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::poly_arc","arcs");}
+
+    cookie = xcb_poly_arc(conn, drawable, gc, ix_arcs, arcs);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2299,19 +2368,23 @@ poly_arc(conn,drawable,gc,arcs_len,arcs)
     RETVAL
 
 HV *
-fill_poly(conn,drawable,gc,shape,coordinate_mode,points_len,points)
+fill_poly(conn,drawable,gc,shape,coordinate_mode,points,...)
     XCBConnection *conn
     uint32_t drawable
     uint32_t gc
     uint8_t shape
     uint8_t coordinate_mode
-    int points_len
     XCBPoint * points
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    cookie = xcb_fill_poly(conn, drawable, gc, shape, coordinate_mode, points_len, points);
+    U32 ix_points;
+    points=mkXCBPoint(aTHX_ items,5,&ix_points,ax,"X11::XCB::fill_poly","points");
+    if(0==points){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::fill_poly","points");}
+
+    cookie = xcb_fill_poly(conn, drawable, gc, shape, coordinate_mode, ix_points, points);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2321,17 +2394,21 @@ fill_poly(conn,drawable,gc,shape,coordinate_mode,points_len,points)
     RETVAL
 
 HV *
-poly_fill_rectangle(conn,drawable,gc,rectangles_len,rectangles)
+poly_fill_rectangle(conn,drawable,gc,rectangles,...)
     XCBConnection *conn
     uint32_t drawable
     uint32_t gc
-    int rectangles_len
     XCBRectangle * rectangles
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    cookie = xcb_poly_fill_rectangle(conn, drawable, gc, rectangles_len, rectangles);
+    U32 ix_rectangles;
+    rectangles=mkXCBRectangle(aTHX_ items,3,&ix_rectangles,ax,"X11::XCB::poly_fill_rectangle","rectangles");
+    if(0==rectangles){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::poly_fill_rectangle","rectangles");}
+
+    cookie = xcb_poly_fill_rectangle(conn, drawable, gc, ix_rectangles, rectangles);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2341,17 +2418,21 @@ poly_fill_rectangle(conn,drawable,gc,rectangles_len,rectangles)
     RETVAL
 
 HV *
-poly_fill_arc(conn,drawable,gc,arcs_len,arcs)
+poly_fill_arc(conn,drawable,gc,arcs,...)
     XCBConnection *conn
     uint32_t drawable
     uint32_t gc
-    int arcs_len
     XCBArc * arcs
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    cookie = xcb_poly_fill_arc(conn, drawable, gc, arcs_len, arcs);
+    U32 ix_arcs;
+    arcs=mkXCBArc(aTHX_ items,3,&ix_arcs,ax,"X11::XCB::poly_fill_arc","arcs");
+    if(0==arcs){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::poly_fill_arc","arcs");}
+
+    cookie = xcb_poly_fill_arc(conn, drawable, gc, ix_arcs, arcs);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2361,7 +2442,7 @@ poly_fill_arc(conn,drawable,gc,arcs_len,arcs)
     RETVAL
 
 HV *
-put_image(conn,format,drawable,gc,width,height,dst_x,dst_y,left_pad,depth,data_len,data)
+put_image(conn,format,drawable,gc,width,height,dst_x,dst_y,left_pad,depth,data_sv)
     XCBConnection *conn
     uint8_t format
     uint32_t drawable
@@ -2372,12 +2453,15 @@ put_image(conn,format,drawable,gc,width,height,dst_x,dst_y,left_pad,depth,data_l
     uint16_t dst_y
     uint8_t left_pad
     uint8_t depth
-    int data_len
-    intArray * data
+    SV* data_sv
   PREINIT:
+
+    char* data;
+    STRLEN data_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+    data = SvPV(data_sv,data_len);
     cookie = xcb_put_image(conn, format, drawable, gc, width, height, dst_x, dst_y, left_pad, depth, data_len,  (const uint8_t*)data);
 
     hash = newHV();
@@ -2398,9 +2482,11 @@ get_image(conn,format,drawable,x,y,width,height,plane_mask)
     uint16_t height
     uint32_t plane_mask
   PREINIT:
+
     HV * hash;
     xcb_get_image_cookie_t cookie;
   CODE:
+
     cookie = xcb_get_image(conn, format, drawable, x, y, width, height, plane_mask);
 
     hash = newHV();
@@ -2418,8 +2504,9 @@ poly_text_8(conn,drawable,gc,x,y,items__len,items_)
     uint16_t x
     uint16_t y
     int items__len
-    intArray * items_
+    intArray8 * items_
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
@@ -2440,8 +2527,9 @@ poly_text_16(conn,drawable,gc,x,y,items__len,items_)
     uint16_t x
     uint16_t y
     int items__len
-    intArray * items_
+    intArray8 * items_
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
@@ -2455,20 +2543,20 @@ poly_text_16(conn,drawable,gc,x,y,items__len,items_)
     RETVAL
 
 HV *
-image_text_8(conn,drawable,gc,x,y,sv)
+image_text_8(conn,drawable,gc,x,y,string_sv)
     XCBConnection *conn
     uint32_t drawable
     uint32_t gc
     uint16_t x
     uint16_t y
-    SV* sv
+    SV* string_sv
   PREINIT:
     char * string;
     STRLEN string_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    string = SvPV(sv,string_len);
+    string = SvPV(string_sv,string_len);
     cookie = xcb_image_text_8(conn, string_len, drawable, gc, x, y, string);
 
     hash = newHV();
@@ -2479,18 +2567,20 @@ image_text_8(conn,drawable,gc,x,y,sv)
     RETVAL
 
 HV *
-image_text_16(conn,string_len,drawable,gc,x,y,string)
+image_text_16(conn,drawable,gc,x,y,string_sv)
     XCBConnection *conn
-    uint8_t string_len
     uint32_t drawable
     uint32_t gc
     uint16_t x
     uint16_t y
-    XCBChar2b * string
+    SV* string_sv
   PREINIT:
+    XCBChar2b * string;
+    STRLEN string_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+    string = convert_SV_to_ucs2(string_sv,&string_len);
     cookie = xcb_image_text_16(conn, string_len, drawable, gc, x, y, string);
 
     hash = newHV();
@@ -2508,9 +2598,11 @@ create_colormap(conn,alloc,mid,window,visual)
     uint32_t window
     uint32_t visual
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_create_colormap(conn, alloc, mid, window, visual);
 
     hash = newHV();
@@ -2525,9 +2617,11 @@ free_colormap(conn,cmap)
     XCBConnection *conn
     uint32_t cmap
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_free_colormap(conn, cmap);
 
     hash = newHV();
@@ -2543,9 +2637,11 @@ copy_colormap_and_free(conn,mid,src_cmap)
     uint32_t mid
     uint32_t src_cmap
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_copy_colormap_and_free(conn, mid, src_cmap);
 
     hash = newHV();
@@ -2560,9 +2656,11 @@ install_colormap(conn,cmap)
     XCBConnection *conn
     uint32_t cmap
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_install_colormap(conn, cmap);
 
     hash = newHV();
@@ -2577,9 +2675,11 @@ uninstall_colormap(conn,cmap)
     XCBConnection *conn
     uint32_t cmap
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_uninstall_colormap(conn, cmap);
 
     hash = newHV();
@@ -2594,9 +2694,11 @@ list_installed_colormaps(conn,window)
     XCBConnection *conn
     uint32_t window
   PREINIT:
+
     HV * hash;
     xcb_list_installed_colormaps_cookie_t cookie;
   CODE:
+
     cookie = xcb_list_installed_colormaps(conn, window);
 
     hash = newHV();
@@ -2614,9 +2716,11 @@ alloc_color(conn,cmap,red,green,blue)
     uint16_t green
     uint16_t blue
   PREINIT:
+
     HV * hash;
     xcb_alloc_color_cookie_t cookie;
   CODE:
+
     cookie = xcb_alloc_color(conn, cmap, red, green, blue);
 
     hash = newHV();
@@ -2627,15 +2731,17 @@ alloc_color(conn,cmap,red,green,blue)
     RETVAL
 
 HV *
-alloc_named_color(conn,cmap,name_len,name)
+alloc_named_color(conn,cmap,name_sv)
     XCBConnection *conn
     uint32_t cmap
-    uint16_t name_len
-    char * name
+    SV* name_sv
   PREINIT:
+    char * name;
+    STRLEN name_len;
     HV * hash;
     xcb_alloc_named_color_cookie_t cookie;
   CODE:
+    name = SvPV(name_sv,name_len);
     cookie = xcb_alloc_named_color(conn, cmap, name_len, name);
 
     hash = newHV();
@@ -2653,9 +2759,11 @@ alloc_color_cells(conn,contiguous,cmap,colors,planes)
     uint16_t colors
     uint16_t planes
   PREINIT:
+
     HV * hash;
     xcb_alloc_color_cells_cookie_t cookie;
   CODE:
+
     cookie = xcb_alloc_color_cells(conn, contiguous, cmap, colors, planes);
 
     hash = newHV();
@@ -2675,9 +2783,11 @@ alloc_color_planes(conn,contiguous,cmap,colors,reds,greens,blues)
     uint16_t greens
     uint16_t blues
   PREINIT:
+
     HV * hash;
     xcb_alloc_color_planes_cookie_t cookie;
   CODE:
+
     cookie = xcb_alloc_color_planes(conn, contiguous, cmap, colors, reds, greens, blues);
 
     hash = newHV();
@@ -2693,8 +2803,9 @@ free_colors(conn,cmap,plane_mask,pixels_len,pixels)
     uint32_t cmap
     uint32_t plane_mask
     int pixels_len
-    intArray * pixels
+    intArray32 * pixels
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
@@ -2714,6 +2825,7 @@ store_colors(conn,cmap,items__len,items_)
     int items__len
     XCBColoritem * items_
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
@@ -2727,17 +2839,19 @@ store_colors(conn,cmap,items__len,items_)
     RETVAL
 
 HV *
-store_named_color(conn,flags,cmap,pixel,name_len,name)
+store_named_color(conn,flags,cmap,pixel,name_sv)
     XCBConnection *conn
     uint8_t flags
     uint32_t cmap
     uint32_t pixel
-    uint16_t name_len
-    char * name
+    SV* name_sv
   PREINIT:
+    char * name;
+    STRLEN name_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+    name = SvPV(name_sv,name_len);
     cookie = xcb_store_named_color(conn, flags, cmap, pixel, name_len, name);
 
     hash = newHV();
@@ -2752,8 +2866,9 @@ query_colors(conn,cmap,pixels_len,pixels)
     XCBConnection *conn
     uint32_t cmap
     int pixels_len
-    intArray * pixels
+    intArray32 * pixels
   PREINIT:
+
     HV * hash;
     xcb_query_colors_cookie_t cookie;
   CODE:
@@ -2767,15 +2882,17 @@ query_colors(conn,cmap,pixels_len,pixels)
     RETVAL
 
 HV *
-lookup_color(conn,cmap,name_len,name)
+lookup_color(conn,cmap,name_sv)
     XCBConnection *conn
     uint32_t cmap
-    uint16_t name_len
-    char * name
+    SV* name_sv
   PREINIT:
+    char * name;
+    STRLEN name_len;
     HV * hash;
     xcb_lookup_color_cookie_t cookie;
   CODE:
+    name = SvPV(name_sv,name_len);
     cookie = xcb_lookup_color(conn, cmap, name_len, name);
 
     hash = newHV();
@@ -2800,9 +2917,11 @@ create_cursor(conn,cid,source,mask,fore_red,fore_green,fore_blue,back_red,back_g
     uint16_t x
     uint16_t y
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_create_cursor(conn, cid, source, mask, fore_red, fore_green, fore_blue, back_red, back_green, back_blue, x, y);
 
     hash = newHV();
@@ -2827,9 +2946,11 @@ create_glyph_cursor(conn,cid,source_font,mask_font,source_char,mask_char,fore_re
     uint16_t back_green
     uint16_t back_blue
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_create_glyph_cursor(conn, cid, source_font, mask_font, source_char, mask_char, fore_red, fore_green, fore_blue, back_red, back_green, back_blue);
 
     hash = newHV();
@@ -2844,9 +2965,11 @@ free_cursor(conn,cursor)
     XCBConnection *conn
     uint32_t cursor
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_free_cursor(conn, cursor);
 
     hash = newHV();
@@ -2867,9 +2990,11 @@ recolor_cursor(conn,cursor,fore_red,fore_green,fore_blue,back_red,back_green,bac
     uint16_t back_green
     uint16_t back_blue
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_recolor_cursor(conn, cursor, fore_red, fore_green, fore_blue, back_red, back_green, back_blue);
 
     hash = newHV();
@@ -2887,9 +3012,11 @@ query_best_size(conn,class,drawable,width,height)
     uint16_t width
     uint16_t height
   PREINIT:
+
     HV * hash;
     xcb_query_best_size_cookie_t cookie;
   CODE:
+
     cookie = xcb_query_best_size(conn, class, drawable, width, height);
 
     hash = newHV();
@@ -2900,14 +3027,16 @@ query_best_size(conn,class,drawable,width,height)
     RETVAL
 
 HV *
-query_extension(conn,name_len,name)
+query_extension(conn,name_sv)
     XCBConnection *conn
-    uint16_t name_len
-    char * name
+    SV* name_sv
   PREINIT:
+    char * name;
+    STRLEN name_len;
     HV * hash;
     xcb_query_extension_cookie_t cookie;
   CODE:
+    name = SvPV(name_sv,name_len);
     cookie = xcb_query_extension(conn, name_len, name);
 
     hash = newHV();
@@ -2922,9 +3051,11 @@ list_extensions(conn)
     XCBConnection *conn
 
   PREINIT:
+
     HV * hash;
     xcb_list_extensions_cookie_t cookie;
   CODE:
+
     cookie = xcb_list_extensions(conn);
 
     hash = newHV();
@@ -2940,11 +3071,13 @@ change_keyboard_mapping(conn,keycode_count,first_keycode,keysyms_per_keycode,key
     uint8_t keycode_count
     uint8_t first_keycode
     uint8_t keysyms_per_keycode
-    intArray * keysyms
+    intArray32 * keysyms
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_change_keyboard_mapping(conn, keycode_count, first_keycode, keysyms_per_keycode,  (const uint32_t*)keysyms);
 
     hash = newHV();
@@ -2960,9 +3093,11 @@ get_keyboard_mapping(conn,first_keycode,count)
     uint8_t first_keycode
     uint8_t count
   PREINIT:
+
     HV * hash;
     xcb_get_keyboard_mapping_cookie_t cookie;
   CODE:
+
     cookie = xcb_get_keyboard_mapping(conn, first_keycode, count);
 
     hash = newHV();
@@ -2976,11 +3111,13 @@ HV *
 change_keyboard_control(conn,value_mask,value_list,...)
     XCBConnection *conn
     uint32_t value_mask
-    intArray * value_list
+    intArray32 * value_list
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_change_keyboard_control(conn, value_mask, value_list);
 
     hash = newHV();
@@ -2995,9 +3132,11 @@ get_keyboard_control(conn)
     XCBConnection *conn
 
   PREINIT:
+
     HV * hash;
     xcb_get_keyboard_control_cookie_t cookie;
   CODE:
+
     cookie = xcb_get_keyboard_control(conn);
 
     hash = newHV();
@@ -3012,9 +3151,11 @@ bell(conn,percent)
     XCBConnection *conn
     uint8_t percent
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_bell(conn, percent);
 
     hash = newHV();
@@ -3033,9 +3174,11 @@ change_pointer_control(conn,acceleration_numerator,acceleration_denominator,thre
     int do_acceleration
     int do_threshold
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_change_pointer_control(conn, acceleration_numerator, acceleration_denominator, threshold, do_acceleration, do_threshold);
 
     hash = newHV();
@@ -3050,9 +3193,11 @@ get_pointer_control(conn)
     XCBConnection *conn
 
   PREINIT:
+
     HV * hash;
     xcb_get_pointer_control_cookie_t cookie;
   CODE:
+
     cookie = xcb_get_pointer_control(conn);
 
     hash = newHV();
@@ -3070,9 +3215,11 @@ set_screen_saver(conn,timeout,interval,prefer_blanking,allow_exposures)
     uint8_t prefer_blanking
     uint8_t allow_exposures
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_set_screen_saver(conn, timeout, interval, prefer_blanking, allow_exposures);
 
     hash = newHV();
@@ -3087,9 +3234,11 @@ get_screen_saver(conn)
     XCBConnection *conn
 
   PREINIT:
+
     HV * hash;
     xcb_get_screen_saver_cookie_t cookie;
   CODE:
+
     cookie = xcb_get_screen_saver(conn);
 
     hash = newHV();
@@ -3100,16 +3249,18 @@ get_screen_saver(conn)
     RETVAL
 
 HV *
-change_hosts(conn,mode,family,address_len,address)
+change_hosts(conn,mode,family,address_sv)
     XCBConnection *conn
     uint8_t mode
     uint8_t family
-    uint16_t address_len
-    intArray * address
+    SV* address_sv
   PREINIT:
+    char* address;
+    STRLEN address_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+    address = SvPV(address_sv,address_len);
     cookie = xcb_change_hosts(conn, mode, family, address_len,  (const uint8_t*)address);
 
     hash = newHV();
@@ -3124,9 +3275,11 @@ list_hosts(conn)
     XCBConnection *conn
 
   PREINIT:
+
     HV * hash;
     xcb_list_hosts_cookie_t cookie;
   CODE:
+
     cookie = xcb_list_hosts(conn);
 
     hash = newHV();
@@ -3141,9 +3294,11 @@ set_access_control(conn,mode)
     XCBConnection *conn
     uint8_t mode
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_set_access_control(conn, mode);
 
     hash = newHV();
@@ -3158,9 +3313,11 @@ set_close_down_mode(conn,mode)
     XCBConnection *conn
     uint8_t mode
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_set_close_down_mode(conn, mode);
 
     hash = newHV();
@@ -3175,9 +3332,11 @@ kill_client(conn,resource)
     XCBConnection *conn
     uint32_t resource
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_kill_client(conn, resource);
 
     hash = newHV();
@@ -3193,8 +3352,9 @@ rotate_properties(conn,window,atoms_len,delta,atoms)
     uint32_t window
     uint16_t atoms_len
     uint16_t delta
-    intArray * atoms
+    intArray32 * atoms
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
@@ -3212,9 +3372,11 @@ force_screen_saver(conn,mode)
     XCBConnection *conn
     uint8_t mode
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_force_screen_saver(conn, mode);
 
     hash = newHV();
@@ -3225,14 +3387,16 @@ force_screen_saver(conn,mode)
     RETVAL
 
 HV *
-set_pointer_mapping(conn,map_len,map)
+set_pointer_mapping(conn,map_sv)
     XCBConnection *conn
-    uint8_t map_len
-    intArray * map
+    SV* map_sv
   PREINIT:
+    char* map;
+    STRLEN map_len;
     HV * hash;
     xcb_set_pointer_mapping_cookie_t cookie;
   CODE:
+    map = SvPV(map_sv,map_len);
     cookie = xcb_set_pointer_mapping(conn, map_len,  (const uint8_t*)map);
 
     hash = newHV();
@@ -3247,9 +3411,11 @@ get_pointer_mapping(conn)
     XCBConnection *conn
 
   PREINIT:
+
     HV * hash;
     xcb_get_pointer_mapping_cookie_t cookie;
   CODE:
+
     cookie = xcb_get_pointer_mapping(conn);
 
     hash = newHV();
@@ -3263,11 +3429,13 @@ HV *
 set_modifier_mapping(conn,keycodes_per_modifier,keycodes)
     XCBConnection *conn
     uint8_t keycodes_per_modifier
-    intArray * keycodes
+    intArray8 * keycodes
   PREINIT:
+
     HV * hash;
     xcb_set_modifier_mapping_cookie_t cookie;
   CODE:
+
     cookie = xcb_set_modifier_mapping(conn, keycodes_per_modifier,  (const uint8_t*)keycodes);
 
     hash = newHV();
@@ -3282,9 +3450,11 @@ get_modifier_mapping(conn)
     XCBConnection *conn
 
   PREINIT:
+
     HV * hash;
     xcb_get_modifier_mapping_cookie_t cookie;
   CODE:
+
     cookie = xcb_get_modifier_mapping(conn);
 
     hash = newHV();
@@ -3299,9 +3469,11 @@ no_operation(conn)
     XCBConnection *conn
 
   PREINIT:
+
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+
     cookie = xcb_no_operation(conn);
 
     hash = newHV();
@@ -4384,9 +4556,11 @@ xinerama_query_version(conn,major,minor)
     uint8_t major
     uint8_t minor
   PREINIT:
+
     HV * hash;
     xcb_xinerama_query_version_cookie_t cookie;
   CODE:
+
     cookie = xcb_xinerama_query_version(conn, major, minor);
 
     hash = newHV();
@@ -4401,9 +4575,11 @@ xinerama_get_state(conn,window)
     XCBConnection *conn
     uint32_t window
   PREINIT:
+
     HV * hash;
     xcb_xinerama_get_state_cookie_t cookie;
   CODE:
+
     cookie = xcb_xinerama_get_state(conn, window);
 
     hash = newHV();
@@ -4418,9 +4594,11 @@ xinerama_get_screen_count(conn,window)
     XCBConnection *conn
     uint32_t window
   PREINIT:
+
     HV * hash;
     xcb_xinerama_get_screen_count_cookie_t cookie;
   CODE:
+
     cookie = xcb_xinerama_get_screen_count(conn, window);
 
     hash = newHV();
@@ -4436,9 +4614,11 @@ xinerama_get_screen_size(conn,window,screen)
     uint32_t window
     uint32_t screen
   PREINIT:
+
     HV * hash;
     xcb_xinerama_get_screen_size_cookie_t cookie;
   CODE:
+
     cookie = xcb_xinerama_get_screen_size(conn, window, screen);
 
     hash = newHV();
@@ -4453,9 +4633,11 @@ xinerama_is_active(conn)
     XCBConnection *conn
 
   PREINIT:
+
     HV * hash;
     xcb_xinerama_is_active_cookie_t cookie;
   CODE:
+
     cookie = xcb_xinerama_is_active(conn);
 
     hash = newHV();
@@ -4470,9 +4652,11 @@ xinerama_query_screens(conn)
     XCBConnection *conn
 
   PREINIT:
+
     HV * hash;
     xcb_xinerama_query_screens_cookie_t cookie;
   CODE:
+
     cookie = xcb_xinerama_query_screens(conn);
 
     hash = newHV();

@@ -1,3 +1,5 @@
+#!/usr/bin/perl
+
 use strict; use warnings;
 
 # Automated testing of this module makes little sense: It requires libXau,
@@ -58,7 +60,7 @@ configure_requires $_ for grep !/Module::Install/, @configure_req;
 use_ppport;
 
 # -Wunused-value generates too much output to use it unconditionally
-cc_warnings if $ENV{X11_XCB_CC_WARNINGS};
+cc_warnings if 1||$ENV{X11_XCB_CC_WARNINGS};
 
 require ExtUtils::PkgConfig;
 require ExtUtils::Depends;
@@ -72,17 +74,28 @@ my @xcb_libs = qw/xcb xcb-util xcb-xinerama xcb-icccm /;
 
 cc_libs @xcb_libs;
 
+my $pkg = ExtUtils::Depends
+    ->new('X11::XCB', 'XS::Object::Magic');
+#$pkg->add_c('ucs2_conversion.c');
+#$pkg->add_c('listarray.c');
 WriteMakefile(
-  ExtUtils::Depends
-    ->new('X11::XCB', 'XS::Object::Magic')
-    ->get_makefile_vars
+	depend		=> {
+		'XCB.c'	=> 'XCB_xs.inc XCB_util.inc XCB.inc XCB.h',
+		#'ucs2_conversion.c'	=> 'EXTERN.h perl.h',
+	},
+	$pkg->get_makefile_vars
 );
 
 postamble <<'END_OF_MAKEFILE';
+
+listarray.c: gen2.pl
+	./gen2.pl c > listarray.c
+
+XCB.h: gen2.pl
+	./gen2.pl h > XCB.h
+
 XCB_xs.inc: _GenerateMyXS.pm
 	$(PERL) -M_GenerateMyXS -E '_GenerateMyXS::generate()'
-
-XCB.c: XCB_xs.inc XCB_util.inc XCB.inc
 
 END_OF_MAKEFILE
 

@@ -35,7 +35,6 @@ sub _request {
     # Place the request directly after the name is set, we get the reply later
     my $request = $self->_conn->intern_atom(
         1, # do not create the atom if it does not exist
-        length($self->name),
         $self->name
     );
 

@@ -403,7 +403,7 @@ sub _update_type {
         $atomname->id,
         $atomtype->id,
         32,         # 32 bit integer
-        1,
+        1,	    #length
         pack('L', $self->window_type->id)
     );
     $self->_conn->flush;
