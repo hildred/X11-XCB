@@ -116,8 +116,7 @@ sub parse_loop_{
 	my @a;
 	my $size;
 	push @a, << "__";
-    U32 ix_$_;
-    $_=mk$type(aTHX_ items,$count,&ix_$_,ax,"X11::XCB::$name","$_");
+    $_=mk$type(aTHX_ items,$count,&${_}_len,ax,"X11::XCB::$name","$_");
     if(0==$_){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::$name","${_}");}
 __
 	join '',@a;
@@ -131,36 +130,81 @@ my %codemap=(
 	'XCBRectangle *'=>*parse_loop_,
 	'XCBPoint *'	=>*parse_loop_,
 	'XCBSegment *'	=>*parse_loop_,
+	'uint8_t *'	=>sub{my($name,$type,$count)=@_;<<"__";},
+    if(1>items-$count)croak("%s: %s is empty","X11::XCB::$name","$_");
+    if(1!=items-$count){
+	// we have a list!
+	${_}_len = items-$count;
+	Newx($_, ${_}_len, uint8_t);
+	if(0==$_){croak("%s: %s Newx failed","X11::XCB::$name","$_");}
+        {int i;for(i=0;i<${_}_len;i++){
+	    SV* this=ST(i+$count);
+	    if(0==this){croak("%s: %s null pointer","X11::XCB::$name","$_");}
+	    SvGETMAGIC(this);
+	    dashes[i]=SvUV(this);
+	}}
+    }else{
+	if (!SvROK(ST($count))){croak("%s: %s expecting more","X11::XCB::$name","$_");}
+	if (!SvTYPE(SvRV(ST($count))) == SVt_PVAV){croak("%s: %s not an array or array ref","X11::XCB::$name","$_");}
+	AV* me = (AV*)SvRV(ST($count));
+	${_}_len = 1+av_len(me);
+	if(1>${_}_len){Perl_croak(aTHX_ "%s: %s is empty","X11::XCB::$name","${_}");}
+	Newx(${_}, ${_}_len, uint8_t);
+	{int i;for(i=0;i<${_}_len;i++){
+	    SV** this=av_fetch(me,i,0);
+	    if(0==this){Perl_croak(aTHX_ "%s: %s null pointer","X11::XCB::$name","${_}");}
+	    SvGETMAGIC(*this);
+	    dashes[i]=SvUV(*this);
+	}}
+    }
+__
 );
 my %vmap=(
 	'char *'=>[s=>0],
 	'XCBChar2b *'=>[s=>0],
-	#'XCBArc *'=>[a=>1],
-	#'XCBRectangle *'=>[a=>1],
-	#'XCBSegment *'=>[a=>1],
-	#'XCBPoint *'=>[a=>1],
-	'intArray8 *'=>0,
+	'XCBArc *'=>[l=>1],
+	'XCBRectangle *'=>[l=>1],
+	'XCBSegment *'=>[l=>1],
+	'XCBPoint *'=>[l=>1],
+	'uint8_t *'=>[l=>1],
+	#'intArray8'=>0,
 	#'void *'=>[a=>0],
 );
 sub tmpl_request {
     my $name=shift;
     my ($cookie, $params, $types, $xcb_cast, $cleanups) = @_;
     return if grep { defined $types->{$_} and $types->{$_} =~ /^void/} @$params; ### void types must be handled by hand.
-    #return if grep { defined $types->{$_} and $types->{$_} =~ /\.\.\./} @$params;
+    return if $name=~/^poly_text/;  ### length abuse, need a plan
 
+    if(defined($types->{rectangles_len})&& 'int'	eq $types->{rectangles_len}	){$types->{rectangles_len}='U32';}
+    if(defined($types->{segments_len})&& 'int'		eq $types->{segments_len}	){$types->{segments_len}='U32';}
+    if(defined($types->{points_len})&&	'int'		eq $types->{points_len}		){$types->{points_len}='U32';}
+    if(defined($types->{arcs_len})&&	'int'		eq $types->{arcs_len}		){$types->{arcs_len}='U32';}
+    if(defined($types->{string_len})&&	'uint8_t'	eq $types->{string_len}		){$types->{string_len}='STRLEN';}
+    if(defined($types->{string_len})&&	'int'		eq $types->{string_len}		){$types->{string_len}='STRLEN';}
+    if(defined($types->{pattern_len})&& 'uint16_t'	eq $types->{pattern_len}	){$types->{pattern_len}='STRLEN';}
+    if(defined($types->{name_len})&&	'uint16_t'	eq $types->{name_len}		){$types->{name_len}='STRLEN';}
+    if(defined($types->{data_len})&&	'int'		eq $types->{data_len}		){$types->{data_len}='STRLEN';}
+    if(defined($types->{value_list})&&	'intArray16 *'	eq $types->{value_list}		){$types->{value_list}='intArray32 *';}
+    if(defined($types->{dashes})&&	'intArray8 *'	eq $types->{dashes}		){$types->{dashes}='uint8_t *';$xcb_cast->{dashes}='';}
+    if(defined($types->{data})&&	'intArray8 *'	eq $types->{data}		){$types->{data}='char *';}
     my %param = map { my $a=$_;$a=~s/_len$//; $a,1} grep { /_len$/ } @$params;
     my $param = join ',', ('conn', map {
-	    $param{$_}?(
-		    $vmap{$types->{$_}}?$_.'_'.$vmap{$types->{$_}}[0].'v':$_.',...'
-	    ):$_
+	    if($param{$_}){
+		    if($vmap{$types->{$_}}){
+			    $vmap{$types->{$_}}[0]eq'l'?'...':$_.'_'.$vmap{$types->{$_}}[0].'v'
+		    }else{
+			    '...'
+		    }
+	    }else{$_}
     } grep { !/_len$/ } @$params);
     my @param = map {
         $a=$_;
 	if($a=~s/_len$//){
 	    $param{$_}?(
 		    $vmap{$types->{$_}}?
-		    	$_
-		    :'ix_'.$a
+			$_
+		    :$a.'_len'
 	    ):$_
 	}else{
 	    $_
@@ -171,19 +215,17 @@ sub tmpl_request {
     $types->{$_.'_sv'}='SV*' foreach (keys %param);
     $types->{$_.'_av'}='AV*' foreach (keys %param);
     $types->{$_.'_hv'}='HV*' foreach (keys %param);
-    if(defined($types->{string_len})&&	'uint8_t'  eq $types->{string_len} ){$types->{string_len}='STRLEN';}
-    if(defined($types->{string_len})&&	'int'	   eq $types->{string_len} ){$types->{string_len}='STRLEN';}
-    if(defined($types->{name_len})&&	'uint16_t' eq $types->{name_len}   ){$types->{name_len}='STRLEN';}
-    if(defined($types->{pattern_len})&& 'uint16_t' eq $types->{pattern_len}){$types->{pattern_len}='STRLEN';}
-    my $param_decl = indent { "$types->{$_} $_" } "\n", map {
+    my $param_decl = indent { $_?"$types->{$_} $_":() } "\n", map {
 	    $param{$_}?(
-		    $vmap{$types->{$_}}?$_.'_'.$vmap{$types->{$_}}[0].'v':$_
+		    $vmap{$types->{$_}}?
+			$vmap{$types->{$_}}[0]eq'l'?():$vmap{$types->{$_}}?$_.'_'.$vmap{$types->{$_}}[0].'v':$_
+		    :$a.'_len'
 	    ):$_
     } grep { !/_len$/ } @param;
     my $len_decl   = indent { "$types->{$_} $_;\n    $types->{${_}.'_len'} ${_}_len;" } "\n", grep {
 	    $param{$_}?(
 		    $vmap{$types->{$_}}?
-		    	1
+			1
 		    :0
 	    ):1
     } keys %param;

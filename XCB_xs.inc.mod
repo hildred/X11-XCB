@@ -2092,27 +2092,44 @@ copy_gc(conn,src_gc,dst_gc,value_mask)
     RETVAL
 
 HV *
-set_dashes(conn,gc,dash_offset,dashes_av)
+set_dashes(conn,gc,dash_offset,...)
     XCBConnection *conn
     uint32_t gc
     uint16_t dash_offset
-    AV* dashes_av
   PREINIT:
-    intArray8 * dashes;
-    uint16_t ix_dashes;
+    uint8_t * dashes;
+    uint16_t dashes_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    ix_dashes = 1+av_len(dashes_av);
-    if(1>ix_dashes){Perl_croak(aTHX_ "%s: %s is empty","X11::XCB::set_dashes","dashes_av");}
-    dashes = malloc(ix_dashes*sizeof(char));
-    {int i;for(i=0;i<ix_dashes;i++){
-	SV** this=av_fetch(dashes_av,i,0);
-	if(0==this){Perl_croak(aTHX_ "%s: %s null pointer","X11::XCB::set_dashes","dashes_av");}
-	SvGETMAGIC(*this);
-	dashes[i]=SvUV(*this);
-    }}
-    cookie = xcb_set_dashes(conn, gc, dash_offset, ix_dashes, dashes);
+    if(1>items-3)croak("%s: %s is empty","X11::XCB::set_dashes","dashes");
+    if(1!=items-3){
+	// we have a list!
+	dashes_len = items-3;
+	Newx(dashes, dashes_len, uint8_t);
+	if(0==dashes){croak("%s: %s Newx failed","X11::XCB::set_dashes","dashes");}
+        {int i;for(i=0;i<dashes_len;i++){
+	    SV* this=ST(i+3);
+	    if(0==this){croak("%s: %s null pointer","X11::XCB::set_dashes","dashes");}
+	    SvGETMAGIC(this);
+	    dashes[i]=SvUV(this);
+	}}
+    }else{
+	if (!SvROK(ST(3))){croak("%s: %s expecting more","X11::XCB::set_dashes","dashes");}
+	if (!SvTYPE(SvRV(ST(3))) == SVt_PVAV){croak("%s: %s not an array or array ref","X11::XCB::set_dashes","dashes");}
+	AV* me = (AV*)SvRV(ST(3));
+	dashes_len = 1+av_len(me);
+	if(1>dashes_len){Perl_croak(aTHX_ "%s: %s is empty","X11::XCB::set_dashes","dashes");}
+	Newx(dashes, dashes_len, uint8_t);
+	{int i;for(i=0;i<dashes_len;i++){
+	    SV** this=av_fetch(me,i,0);
+	    if(0==this){Perl_croak(aTHX_ "%s: %s null pointer","X11::XCB::set_dashes","dashes");}
+	    SvGETMAGIC(*this);
+	    dashes[i]=SvUV(*this);
+	}}
+    }
+
+    cookie = xcb_set_dashes(conn, gc, dash_offset, dashes_len, dashes);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2122,23 +2139,22 @@ set_dashes(conn,gc,dash_offset,dashes_av)
     RETVAL
 
 HV *
-set_clip_rectangles(conn,ordering,gc,clip_x_origin,clip_y_origin,rectangles,...)
+set_clip_rectangles(conn,ordering,gc,clip_x_origin,clip_y_origin,...)
     XCBConnection *conn
     uint8_t ordering
     uint32_t gc
     uint16_t clip_x_origin
     uint16_t clip_y_origin
-    XCBRectangle * rectangles
   PREINIT:
-
+    XCBRectangle * rectangles;
+    U32 rectangles_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    U32 ix_rectangles;
-    rectangles=mkXCBRectangle(aTHX_ items,5,&ix_rectangles,ax,"X11::XCB::set_clip_rectangles","rectangles");
+    rectangles=mkXCBRectangle(aTHX_ items,5,&rectangles_len,ax,"X11::XCB::set_clip_rectangles","rectangles");
     if(0==rectangles){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::set_clip_rectangles","rectangles");}
 
-    cookie = xcb_set_clip_rectangles(conn, ordering, gc, clip_x_origin, clip_y_origin, ix_rectangles, rectangles);
+    cookie = xcb_set_clip_rectangles(conn, ordering, gc, clip_x_origin, clip_y_origin, rectangles_len, rectangles);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2246,22 +2262,21 @@ copy_plane(conn,src_drawable,dst_drawable,gc,src_x,src_y,dst_x,dst_y,width,heigh
     RETVAL
 
 HV *
-poly_point(conn,coordinate_mode,drawable,gc,points,...)
+poly_point(conn,coordinate_mode,drawable,gc,...)
     XCBConnection *conn
     uint8_t coordinate_mode
     uint32_t drawable
     uint32_t gc
-    XCBPoint * points
   PREINIT:
-
+    XCBPoint * points;
+    U32 points_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    U32 ix_points;
-    points=mkXCBPoint(aTHX_ items,4,&ix_points,ax,"X11::XCB::poly_point","points");
+    points=mkXCBPoint(aTHX_ items,4,&points_len,ax,"X11::XCB::poly_point","points");
     if(0==points){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::poly_point","points");}
 
-    cookie = xcb_poly_point(conn, coordinate_mode, drawable, gc, ix_points, points);
+    cookie = xcb_poly_point(conn, coordinate_mode, drawable, gc, points_len, points);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2271,22 +2286,21 @@ poly_point(conn,coordinate_mode,drawable,gc,points,...)
     RETVAL
 
 HV *
-poly_line(conn,coordinate_mode,drawable,gc,points,...)
+poly_line(conn,coordinate_mode,drawable,gc,...)
     XCBConnection *conn
     uint8_t coordinate_mode
     uint32_t drawable
     uint32_t gc
-    XCBPoint * points
   PREINIT:
-
+    XCBPoint * points;
+    U32 points_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    U32 ix_points;
-    points=mkXCBPoint(aTHX_ items,4,&ix_points,ax,"X11::XCB::poly_line","points");
+    points=mkXCBPoint(aTHX_ items,4,&points_len,ax,"X11::XCB::poly_line","points");
     if(0==points){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::poly_line","points");}
 
-    cookie = xcb_poly_line(conn, coordinate_mode, drawable, gc, ix_points, points);
+    cookie = xcb_poly_line(conn, coordinate_mode, drawable, gc, points_len, points);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2296,21 +2310,20 @@ poly_line(conn,coordinate_mode,drawable,gc,points,...)
     RETVAL
 
 HV *
-poly_segment(conn,drawable,gc,segments,...)
+poly_segment(conn,drawable,gc,...)
     XCBConnection *conn
     uint32_t drawable
     uint32_t gc
-    XCBSegment * segments
   PREINIT:
-
+    XCBSegment * segments;
+    U32 segments_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    U32 ix_segments;
-    segments=mkXCBSegment(aTHX_ items,3,&ix_segments,ax,"X11::XCB::poly_segment","segments");
+    segments=mkXCBSegment(aTHX_ items,3,&segments_len,ax,"X11::XCB::poly_segment","segments");
     if(0==segments){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::poly_segment","segments");}
 
-    cookie = xcb_poly_segment(conn, drawable, gc, ix_segments, segments);
+    cookie = xcb_poly_segment(conn, drawable, gc, segments_len, segments);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2326,15 +2339,14 @@ poly_rectangle(conn,drawable,gc,...)
     uint32_t gc
   PREINIT:
     XCBRectangle * rectangles;
-
+    U32 rectangles_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    U32 ix_rectangles;
-    rectangles=mkXCBRectangle(aTHX_ items,3,&ix_rectangles,ax,"X11::XCB::poly_rectangle","rectangles");
+    rectangles=mkXCBRectangle(aTHX_ items,3,&rectangles_len,ax,"X11::XCB::poly_rectangle","rectangles");
     if(0==rectangles){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::poly_rectangle","rectangles");}
 
-    cookie = xcb_poly_rectangle(conn, drawable, gc, ix_rectangles, rectangles);
+    cookie = xcb_poly_rectangle(conn, drawable, gc, rectangles_len, rectangles);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2344,21 +2356,20 @@ poly_rectangle(conn,drawable,gc,...)
     RETVAL
 
 HV *
-poly_arc(conn,drawable,gc,arcs,...)
+poly_arc(conn,drawable,gc,...)
     XCBConnection *conn
     uint32_t drawable
     uint32_t gc
-    XCBArc * arcs
   PREINIT:
-
+    XCBArc * arcs;
+    U32 arcs_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    U32 ix_arcs;
-    arcs=mkXCBArc(aTHX_ items,3,&ix_arcs,ax,"X11::XCB::poly_arc","arcs");
+    arcs=mkXCBArc(aTHX_ items,3,&arcs_len,ax,"X11::XCB::poly_arc","arcs");
     if(0==arcs){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::poly_arc","arcs");}
 
-    cookie = xcb_poly_arc(conn, drawable, gc, ix_arcs, arcs);
+    cookie = xcb_poly_arc(conn, drawable, gc, arcs_len, arcs);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2368,23 +2379,22 @@ poly_arc(conn,drawable,gc,arcs,...)
     RETVAL
 
 HV *
-fill_poly(conn,drawable,gc,shape,coordinate_mode,points,...)
+fill_poly(conn,drawable,gc,shape,coordinate_mode,...)
     XCBConnection *conn
     uint32_t drawable
     uint32_t gc
     uint8_t shape
     uint8_t coordinate_mode
-    XCBPoint * points
   PREINIT:
-
+    XCBPoint * points;
+    U32 points_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    U32 ix_points;
-    points=mkXCBPoint(aTHX_ items,5,&ix_points,ax,"X11::XCB::fill_poly","points");
+    points=mkXCBPoint(aTHX_ items,5,&points_len,ax,"X11::XCB::fill_poly","points");
     if(0==points){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::fill_poly","points");}
 
-    cookie = xcb_fill_poly(conn, drawable, gc, shape, coordinate_mode, ix_points, points);
+    cookie = xcb_fill_poly(conn, drawable, gc, shape, coordinate_mode, points_len, points);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2394,21 +2404,20 @@ fill_poly(conn,drawable,gc,shape,coordinate_mode,points,...)
     RETVAL
 
 HV *
-poly_fill_rectangle(conn,drawable,gc,rectangles,...)
+poly_fill_rectangle(conn,drawable,gc,...)
     XCBConnection *conn
     uint32_t drawable
     uint32_t gc
-    XCBRectangle * rectangles
   PREINIT:
-
+    XCBRectangle * rectangles;
+    U32 rectangles_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    U32 ix_rectangles;
-    rectangles=mkXCBRectangle(aTHX_ items,3,&ix_rectangles,ax,"X11::XCB::poly_fill_rectangle","rectangles");
+    rectangles=mkXCBRectangle(aTHX_ items,3,&rectangles_len,ax,"X11::XCB::poly_fill_rectangle","rectangles");
     if(0==rectangles){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::poly_fill_rectangle","rectangles");}
 
-    cookie = xcb_poly_fill_rectangle(conn, drawable, gc, ix_rectangles, rectangles);
+    cookie = xcb_poly_fill_rectangle(conn, drawable, gc, rectangles_len, rectangles);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2418,21 +2427,20 @@ poly_fill_rectangle(conn,drawable,gc,rectangles,...)
     RETVAL
 
 HV *
-poly_fill_arc(conn,drawable,gc,arcs,...)
+poly_fill_arc(conn,drawable,gc,...)
     XCBConnection *conn
     uint32_t drawable
     uint32_t gc
-    XCBArc * arcs
   PREINIT:
-
+    XCBArc * arcs;
+    U32 arcs_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
-    U32 ix_arcs;
-    arcs=mkXCBArc(aTHX_ items,3,&ix_arcs,ax,"X11::XCB::poly_fill_arc","arcs");
+    arcs=mkXCBArc(aTHX_ items,3,&arcs_len,ax,"X11::XCB::poly_fill_arc","arcs");
     if(0==arcs){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::poly_fill_arc","arcs");}
 
-    cookie = xcb_poly_fill_arc(conn, drawable, gc, ix_arcs, arcs);
+    cookie = xcb_poly_fill_arc(conn, drawable, gc, arcs_len, arcs);
 
     hash = newHV();
     hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
@@ -2455,8 +2463,7 @@ put_image(conn,format,drawable,gc,width,height,dst_x,dst_y,left_pad,depth,data_s
     uint8_t depth
     SV* data_sv
   PREINIT:
-
-    char* data;
+    char * data;
     STRLEN data_len;
     HV * hash;
     xcb_void_cookie_t cookie;
