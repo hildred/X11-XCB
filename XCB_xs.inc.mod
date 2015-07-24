@@ -3408,17 +3408,43 @@ kill_client(conn,resource)
     RETVAL
 
 HV *
-rotate_properties(conn,window,atoms_len,delta,atoms)
+rotate_properties(conn,window,delta,...)
     XCBConnection *conn
     uint32_t window
-    uint16_t atoms_len
     uint16_t delta
-    intArray32 * atoms
   PREINIT:
-
+    intArray32 * atoms;
+    uint16_t atoms_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+    if(1>items-3)croak("%s: %s is empty","X11::XCB::rotate_properties","atoms");
+    if(1!=items-3){
+	// we have a list!
+	atoms_len = items-3;
+	Newx(atoms, atoms_len, intArray32);
+	if(0==atoms){croak("%s: %s Newx failed","X11::XCB::rotate_properties","atoms");}
+        {int i;for(i=0;i<atoms_len;i++){
+	    SV* this=ST(i+3);
+	    if(0==this){croak("%s: %s null pointer","X11::XCB::rotate_properties","atoms");}
+	    SvGETMAGIC(this);
+	    atoms[i]=SvUV(this);
+	}}
+    }else{
+	if (!SvROK(ST(3))){croak("%s: %s expecting more","X11::XCB::rotate_properties","atoms");}
+	if (!SvTYPE(SvRV(ST(3))) == SVt_PVAV){croak("%s: %s not an array or array ref","X11::XCB::rotate_properties","atoms");}
+	AV* me = (AV*)SvRV(ST(3));
+	atoms_len = 1+av_len(me);
+	if(1>atoms_len){Perl_croak(aTHX_ "%s: %s is empty","X11::XCB::rotate_properties","atoms");}
+	Newx(atoms, atoms_len, intArray32);
+	{int i;for(i=0;i<atoms_len;i++){
+	    SV** this=av_fetch(me,i,0);
+	    if(0==this){Perl_croak(aTHX_ "%s: %s null pointer","X11::XCB::rotate_properties","atoms");}
+	    SvGETMAGIC(*this);
+	    atoms[i]=SvUV(*this);
+	}}
+    }
+
     cookie = xcb_rotate_properties(conn, window, atoms_len, delta,  (const uint32_t*)atoms);
 
     hash = newHV();
@@ -3452,7 +3478,7 @@ set_pointer_mapping(conn,map_sv)
     XCBConnection *conn
     SV* map_sv
   PREINIT:
-    char* map;
+    char * map;
     STRLEN map_len;
     HV * hash;
     xcb_set_pointer_mapping_cookie_t cookie;

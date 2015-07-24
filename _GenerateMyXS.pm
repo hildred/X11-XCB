@@ -156,8 +156,8 @@ __
 
 {
 my %codemap=(
-	'char *'	=>sub{my($name)=@_;"    $_ = SvPV(${_}_sv,${_}_len);"},
-	'XCBChar2b *'	=>sub{my($name)=@_;"    $_ = convert_SV_to_ucs2(${_}_sv,&${_}_len);"},
+	'char *'	=>sub{my($name)=@_;"    $_ = SvPV(${_}_sv,${_}_len);".($name=~/^poly_text/?"\n    if(${_}_len>254) croak(\"string too long for type\");":'')},
+	'XCBChar2b *'	=>sub{my($name)=@_;"    $_ = convert_SV_to_ucs2(${_}_sv,&${_}_len);".($name=~/^poly_text/?"\n    if(${_}_len>254) croak(\"string too long for type\");":'')},
 	'XCBArc *'	=>*parse_loop_,
 	'XCBRectangle *'=>*parse_loop_,
 	'XCBPoint *'	=>*parse_loop_,
@@ -178,37 +178,70 @@ my %vmap=(
 	'intArray32 *'=>[l=>1],
 	#'void *'=>[a=>0],
 );
+sub redefinelentype($$$){
+	my ($types,$key,$old)=@_;
+	if(!defined $types->{$key.'_len'}){
+		warn "_len, $key, $old"if defined$types->{$key};
+	}elsif(!defined $types->{$key}){
+		warn "unknown_len, $key, $old";
+	}elsif(!$vmap{$types->{$key}}){
+		warn "__len, $key, $old";
+	}elsif('s'eq$vmap{$types->{$key}}[0]){
+		$types->{$key.'_len'}='STRLEN';
+	}elsif('l'eq$vmap{$types->{$key}}[0]){
+		$types->{$key.'_len'}='U32';
+	}else{
+		warn "__len, $key, $old";
+	}
+}
+sub redefinetype($$$$){
+	my ($types,$key,$old,$new)=@_;
+	if(defined($types->{$key})&& $types->{$key}eq$old){$types->{$key}=$new;}
+}
 sub tmpl_request {
     my $name=shift;
     my ($cookie, $params, $types, $xcb_cast, $cleanups) = @_;
     return if grep { defined $types->{$_} and $types->{$_} =~ /^void/} @$params; ### void types must be handled by hand.
     #return if grep { /^pixels$/} @$params; ### colors need work
-    return if grep { /^atoms$/} @$params; ### atoms need work
-    return if $name=~/^poly_text/;  ### length abuse, need a plan
-    return if grep { /^map$/} @$params; ### just so I can get the git version to build without help, todo.
+    #return if $name=~/^poly_text/;  ### length abuse, need a plan
 
-    if(defined($types->{rectangles_len})&& 'int'	eq $types->{rectangles_len}	){$types->{rectangles_len}='U32';}
-    if(defined($types->{segments_len})&& 'int'		eq $types->{segments_len}	){$types->{segments_len}='U32';}
-    if(defined($types->{items__len})&&	'int'		eq $types->{items__len}		){$types->{items__len}='U32';}
-    if(defined($types->{points_len})&&	'int'		eq $types->{points_len}		){$types->{points_len}='U32';}
-    if(defined($types->{arcs_len})&&	'int'		eq $types->{arcs_len}		){$types->{arcs_len}='U32';}
-    if(defined($types->{string_len})&&	'uint8_t'	eq $types->{string_len}		){$types->{string_len}='STRLEN';}
-    if(defined($types->{string_len})&&	'int'		eq $types->{string_len}		){$types->{string_len}='STRLEN';}
-    if(defined($types->{pattern_len})&& 'uint16_t'	eq $types->{pattern_len}	){$types->{pattern_len}='STRLEN';}
-    if(defined($types->{address_len})&& 'uint16_t'	eq $types->{address_len}	){$types->{address_len}='STRLEN';}
-    if(defined($types->{name_len})&&	'uint16_t'	eq $types->{name_len}		){$types->{name_len}='STRLEN';}
-    if(defined($types->{data_len})&&	'int'		eq $types->{data_len}		){$types->{data_len}='STRLEN';}
-    if(defined($types->{value_list})&&	'intArray16 *'	eq $types->{value_list}		){$types->{value_list}='intArray32 *';}
-    if(defined($types->{dashes})&&	'intArray8 *'	eq $types->{dashes}		){$types->{dashes}='uint8_t *';$xcb_cast->{dashes}='';}
-    if(defined($types->{data})&&	'intArray8 *'	eq $types->{data}		){$types->{data}='char *';}
-    if(defined($types->{address})&&	'intArray8 *'	eq $types->{address}		){$types->{address}='char *';}
+    #these are really arrays of bytes doubel bytes or quad bytes, so we want to map from intigers
+    if(defined($types->{dashes})&&	'intArray8 *'	eq $types->{dashes}		){$xcb_cast->{dashes}='';}
+    redefinetype $types, dashes=>	'intArray8 *'=>'uint8_t *';
+    redefinetype $types, value_list=>	'intArray16 *'=>'intArray32 *';
+
+    #these realy are strings, so lets treat them as such
+    redefinetype $types, items_=>	'intArray8 *'=>'char *'	     if 'poly_text_8' eq$name;
+    redefinetype $types, items_=>	'intArray8 *'=>'XCBChar2b *' if 'poly_text_16'eq$name;
+
+    #these realy are data buffers, so lets treat them as strings
+    redefinetype $types, map=>		'intArray8 *'=>'char *';
+    redefinetype $types, data=>		'intArray8 *'=>'char *';
+    redefinetype $types, address=>	'intArray8 *'=>'char *';
+
+    #lengths will be auto mapped by c, except when passed by pointer and strings need as length type of STRLEN for thes SvPV family and U32 for newx.
+    redefinelentype $types, map=>	'uint8_t';
+    redefinelentype $types, name=>	'uint16_t';
+    redefinelentype $types, string=>	'uint8_t';
+    redefinelentype $types, pattern=>	'uint16_t';
+    redefinelentype $types, address=>	'uint16_t';
+    redefinelentype $types, data=>	'int';
+    redefinelentype $types, arcs=>	'int';
+    redefinelentype $types, string=>	'int';
+    redefinelentype $types, items_=>	'int';
+    redefinelentype $types, points=>	'int';
+    redefinelentype $types, segments=>	'int';
+    redefinelentype $types, rectangles=>'int';
+
+    #let's get the length params ready for use
     my %param = map { my $a=$_;$a=~s/_len$//; $a,1} grep { /_len$/ } @$params;
+
     my $param = join ',', ('conn', map {
 	    if($param{$_}){
 		    if($vmap{$types->{$_}}){
 			    $vmap{$types->{$_}}[0]eq'l'?'...':$_.'_'.$vmap{$types->{$_}}[0].'v'
 		    }else{
-			    '...'
+			    $_
 		    }
 	    }else{$_}
     } grep { !/_len$/ } @$params);
@@ -236,11 +269,18 @@ sub tmpl_request {
 		    :$a.'_len'
 	    ):$_
     } grep { !/_len$/ } @param;
-    my $len_decl   = indent { "$types->{$_} $_;\n    $types->{${_}.'_len'} ${_}_len;" } "\n", grep {
+    my $len_decl   = indent {
+	    $types->{$_}='dummy' unless defined $types->{$_};
+	    if($types->{${_}.'_len'}){
+		    "$types->{$_} $_;\n    $types->{${_}.'_len'} ${_}_len;"
+	    }else{
+		    "$types->{$_} $_;\n    size_t ${_}_len;"
+	    }
+    } "\n", grep {
 	    $param{$_}?(
-		    $vmap{$types->{$_}}?
-			1
-		    :0
+		$types->{$_}?(
+		     $vmap{$types->{$_}}?1:0
+		):1
 	    ):1
     } keys %param;
     my $code_decl  = join "$_", map {($codemap{$types->{$_}}?$codemap{$types->{$_}}:sub{"//error map for $types->{$_} missing\n#error $_"})->($name,$types->{$_},scalar(@param)-1)} sort keys %param;
@@ -555,6 +595,7 @@ sub do_enums {
 
 sub generate {
     my $path = ExtUtils::PkgConfig->variable('xcb-proto', 'xcbincludedir');
+    #my @xcb_xmls = qw/xproto.xml xinerama.xml randr.xml/;
     my @xcb_xmls = qw/xproto.xml xinerama.xml/;
 
     -d $path or die "$path: $!\n";
