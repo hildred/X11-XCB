@@ -2805,17 +2805,43 @@ alloc_color_planes(conn,contiguous,cmap,colors,reds,greens,blues)
     RETVAL
 
 HV *
-free_colors(conn,cmap,plane_mask,pixels_len,pixels)
+free_colors(conn,cmap,plane_mask,...)
     XCBConnection *conn
     uint32_t cmap
     uint32_t plane_mask
-    int pixels_len
-    intArray32 * pixels
   PREINIT:
-
+    intArray32 * pixels;
+    int pixels_len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+    if(1>items-3)croak("%s: %s is empty","X11::XCB::free_colors","pixels");
+    if(1!=items-3){
+	// we have a list!
+	pixels_len = items-3;
+	Newx(pixels, pixels_len, intArray32);
+	if(0==pixels){croak("%s: %s Newx failed","X11::XCB::free_colors","pixels");}
+        {int i;for(i=0;i<pixels_len;i++){
+	    SV* this=ST(i+3);
+	    if(0==this){croak("%s: %s null pointer","X11::XCB::free_colors","pixels");}
+	    SvGETMAGIC(this);
+	    pixels[i]=SvUV(this);
+	}}
+    }else{
+	if (!SvROK(ST(3))){croak("%s: %s expecting more","X11::XCB::free_colors","pixels");}
+	if (!SvTYPE(SvRV(ST(3))) == SVt_PVAV){croak("%s: %s not an array or array ref","X11::XCB::free_colors","pixels");}
+	AV* me = (AV*)SvRV(ST(3));
+	pixels_len = 1+av_len(me);
+	if(1>pixels_len){Perl_croak(aTHX_ "%s: %s is empty","X11::XCB::free_colors","pixels");}
+	Newx(pixels, pixels_len, intArray32);
+	{int i;for(i=0;i<pixels_len;i++){
+	    SV** this=av_fetch(me,i,0);
+	    if(0==this){Perl_croak(aTHX_ "%s: %s null pointer","X11::XCB::free_colors","pixels");}
+	    SvGETMAGIC(*this);
+	    pixels[i]=SvUV(*this);
+	}}
+    }
+
     cookie = xcb_free_colors(conn, cmap, plane_mask, pixels_len,  (const uint32_t*)pixels);
 
     hash = newHV();
@@ -2826,16 +2852,18 @@ free_colors(conn,cmap,plane_mask,pixels_len,pixels)
     RETVAL
 
 HV *
-store_colors(conn,cmap,items__len,items_)
+store_colors(conn,cmap,...)
     XCBConnection *conn
     uint32_t cmap
-    int items__len
-    XCBColoritem * items_
   PREINIT:
-
+    XCBColoritem * items_;
+    U32 items__len;
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+    items_=mkXCBColoritem(aTHX_ items,2,&items__len,ax,"X11::XCB::store_colors","items_");
+    if(0==items_){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::store_colors","items_");}
+
     cookie = xcb_store_colors(conn, cmap, items__len, items_);
 
     hash = newHV();
@@ -2869,16 +2897,42 @@ store_named_color(conn,flags,cmap,pixel,name_sv)
     RETVAL
 
 HV *
-query_colors(conn,cmap,pixels_len,pixels)
+query_colors(conn,cmap,...)
     XCBConnection *conn
     uint32_t cmap
-    int pixels_len
-    intArray32 * pixels
   PREINIT:
-
+    intArray32 * pixels;
+    int pixels_len;
     HV * hash;
     xcb_query_colors_cookie_t cookie;
   CODE:
+    if(1>items-2)croak("%s: %s is empty","X11::XCB::query_colors","pixels");
+    if(1!=items-2){
+	// we have a list!
+	pixels_len = items-2;
+	Newx(pixels, pixels_len, intArray32);
+	if(0==pixels){croak("%s: %s Newx failed","X11::XCB::query_colors","pixels");}
+        {int i;for(i=0;i<pixels_len;i++){
+	    SV* this=ST(i+2);
+	    if(0==this){croak("%s: %s null pointer","X11::XCB::query_colors","pixels");}
+	    SvGETMAGIC(this);
+	    pixels[i]=SvUV(this);
+	}}
+    }else{
+	if (!SvROK(ST(2))){croak("%s: %s expecting more","X11::XCB::query_colors","pixels");}
+	if (!SvTYPE(SvRV(ST(2))) == SVt_PVAV){croak("%s: %s not an array or array ref","X11::XCB::query_colors","pixels");}
+	AV* me = (AV*)SvRV(ST(2));
+	pixels_len = 1+av_len(me);
+	if(1>pixels_len){Perl_croak(aTHX_ "%s: %s is empty","X11::XCB::query_colors","pixels");}
+	Newx(pixels, pixels_len, intArray32);
+	{int i;for(i=0;i<pixels_len;i++){
+	    SV** this=av_fetch(me,i,0);
+	    if(0==this){Perl_croak(aTHX_ "%s: %s null pointer","X11::XCB::query_colors","pixels");}
+	    SvGETMAGIC(*this);
+	    pixels[i]=SvUV(*this);
+	}}
+    }
+
     cookie = xcb_query_colors(conn, cmap, pixels_len,  (const uint32_t*)pixels);
 
     hash = newHV();

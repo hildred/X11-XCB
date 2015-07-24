@@ -113,11 +113,43 @@ __
 sub parse_loop_{
 	my($name,$type,$count)=@_;
 	$type=~s/ \*$//;
-	my @a;
 	my $size;
-	push @a, << "__";
+	<< "__";
     $_=mk$type(aTHX_ items,$count,&${_}_len,ax,"X11::XCB::$name","$_");
     if(0==$_){Perl_croak(aTHX_ "%s: %s could not create array","X11::XCB::$name","${_}");}
+__
+}
+sub parse_loop_simple{
+	my($name,$type,$count)=@_;
+	$type=~s/ \*$//;
+	my @a;
+	push @a, << "__";
+    if(1>items-$count)croak("%s: %s is empty","X11::XCB::$name","$_");
+    if(1!=items-$count){
+	// we have a list!
+	${_}_len = items-$count;
+	Newx($_, ${_}_len, $type);
+	if(0==$_){croak("%s: %s Newx failed","X11::XCB::$name","$_");}
+        {int i;for(i=0;i<${_}_len;i++){
+	    SV* this=ST(i+$count);
+	    if(0==this){croak("%s: %s null pointer","X11::XCB::$name","$_");}
+	    SvGETMAGIC(this);
+	    ${_}[i]=SvUV(this);
+	}}
+    }else{
+	if (!SvROK(ST($count))){croak("%s: %s expecting more","X11::XCB::$name","$_");}
+	if (!SvTYPE(SvRV(ST($count))) == SVt_PVAV){croak("%s: %s not an array or array ref","X11::XCB::$name","$_");}
+	AV* me = (AV*)SvRV(ST($count));
+	${_}_len = 1+av_len(me);
+	if(1>${_}_len){Perl_croak(aTHX_ "%s: %s is empty","X11::XCB::$name","${_}");}
+	Newx(${_}, ${_}_len, $type);
+	{int i;for(i=0;i<${_}_len;i++){
+	    SV** this=av_fetch(me,i,0);
+	    if(0==this){Perl_croak(aTHX_ "%s: %s null pointer","X11::XCB::$name","${_}");}
+	    SvGETMAGIC(*this);
+	    ${_}[i]=SvUV(*this);
+	}}
+    }
 __
 	join '',@a;
 }
@@ -129,59 +161,35 @@ my %codemap=(
 	'XCBArc *'	=>*parse_loop_,
 	'XCBRectangle *'=>*parse_loop_,
 	'XCBPoint *'	=>*parse_loop_,
+	'XCBColoritem *'=>*parse_loop_,
 	'XCBSegment *'	=>*parse_loop_,
-	'uint8_t *'	=>sub{my($name,$type,$count)=@_;<<"__";},
-    if(1>items-$count)croak("%s: %s is empty","X11::XCB::$name","$_");
-    if(1!=items-$count){
-	// we have a list!
-	${_}_len = items-$count;
-	Newx($_, ${_}_len, uint8_t);
-	if(0==$_){croak("%s: %s Newx failed","X11::XCB::$name","$_");}
-        {int i;for(i=0;i<${_}_len;i++){
-	    SV* this=ST(i+$count);
-	    if(0==this){croak("%s: %s null pointer","X11::XCB::$name","$_");}
-	    SvGETMAGIC(this);
-	    dashes[i]=SvUV(this);
-	}}
-    }else{
-	if (!SvROK(ST($count))){croak("%s: %s expecting more","X11::XCB::$name","$_");}
-	if (!SvTYPE(SvRV(ST($count))) == SVt_PVAV){croak("%s: %s not an array or array ref","X11::XCB::$name","$_");}
-	AV* me = (AV*)SvRV(ST($count));
-	${_}_len = 1+av_len(me);
-	if(1>${_}_len){Perl_croak(aTHX_ "%s: %s is empty","X11::XCB::$name","${_}");}
-	Newx(${_}, ${_}_len, uint8_t);
-	{int i;for(i=0;i<${_}_len;i++){
-	    SV** this=av_fetch(me,i,0);
-	    if(0==this){Perl_croak(aTHX_ "%s: %s null pointer","X11::XCB::$name","${_}");}
-	    SvGETMAGIC(*this);
-	    dashes[i]=SvUV(*this);
-	}}
-    }
-__
+	'uint8_t *'	=>*parse_loop_simple,
+	'intArray32 *'	=>*parse_loop_simple,
 );
 my %vmap=(
 	'char *'=>[s=>0],
 	'XCBChar2b *'=>[s=>0],
 	'XCBArc *'=>[l=>1],
 	'XCBRectangle *'=>[l=>1],
+	'XCBColoritem *'=>[l=>1],
 	'XCBSegment *'=>[l=>1],
 	'XCBPoint *'=>[l=>1],
 	'uint8_t *'=>[l=>1],
-	#'intArray8'=>0,
+	'intArray32 *'=>[l=>1],
 	#'void *'=>[a=>0],
 );
 sub tmpl_request {
     my $name=shift;
     my ($cookie, $params, $types, $xcb_cast, $cleanups) = @_;
     return if grep { defined $types->{$_} and $types->{$_} =~ /^void/} @$params; ### void types must be handled by hand.
-    return if grep { /^pixels$/} @$params; ### colors need work
-    return if grep { /^items_$/} @$params; ### colors need work
+    #return if grep { /^pixels$/} @$params; ### colors need work
     return if grep { /^atoms$/} @$params; ### atoms need work
     return if $name=~/^poly_text/;  ### length abuse, need a plan
     return if grep { /^map$/} @$params; ### just so I can get the git version to build without help, todo.
 
     if(defined($types->{rectangles_len})&& 'int'	eq $types->{rectangles_len}	){$types->{rectangles_len}='U32';}
     if(defined($types->{segments_len})&& 'int'		eq $types->{segments_len}	){$types->{segments_len}='U32';}
+    if(defined($types->{items__len})&&	'int'		eq $types->{items__len}		){$types->{items__len}='U32';}
     if(defined($types->{points_len})&&	'int'		eq $types->{points_len}		){$types->{points_len}='U32';}
     if(defined($types->{arcs_len})&&	'int'		eq $types->{arcs_len}		){$types->{arcs_len}='U32';}
     if(defined($types->{string_len})&&	'uint8_t'	eq $types->{string_len}		){$types->{string_len}='STRLEN';}

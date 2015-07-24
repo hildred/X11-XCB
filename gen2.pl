@@ -2,6 +2,26 @@
 
 use strict; use warnings;
 
+my @typenames=qw(XCBSegment XCBArc XCBRectangle XCBPoint XCBColoritem);
+my %typegroup=(
+	XCBSegment=>qname=>
+	XCBRectangle=>pname=>
+	XCBArc=>pname=>
+	XCBPoint=>pname=>
+	XCBColoritem=>cname=>
+);
+my %typesize=(
+	XCBSegment=>4,
+	XCBRectangle=>4,
+	XCBArc=>6,
+	XCBPoint=>2,
+	XCBColoritem=>5,
+);
+my %typemem=(
+	pname=>["x","y","width","height","angle1","angle2"],
+	qname=>["x1","y1","x2","y2"],
+	cname=>[qw(pixel red green blue flags)],
+);
 sub dimcheck{
 	my($indent,$size,$type)=@_;
 	#$type=~s/ \*$//;
@@ -14,7 +34,8 @@ __
 	}elsif('XCBRectangle'eq$type){	push @a, qq/rectangles must have four/;
 	}elsif('XCBPoint'eq$type){	push @a, qq/points must have two/;
 	}elsif('XCBSegment'eq$type){	push @a, qq/segments must have four/;
-	}
+	}elsif('XCBColoritem'eq$type){	push @a, qq/colors must have five/;
+	}else{die $type}
 	push @a, " dimensions, line %d\",lname,fname,__LINE__);return 0;}\n";
 	join '', @a;
 }
@@ -26,32 +47,12 @@ sub structfill{
 ${indent}//SvGETMAGIC(*that);
 ${indent}switch(j){
 __
-	if('XCBSegment'eq$type){
-		push @a, "#line ", (__LINE__ +1), ' "', __FILE__, "\"\n", << "__";
-$indent	case 0: array[i].x1=SvUV(*that);break;
-$indent	case 1: array[i].y1=SvUV(*that);break;
-$indent	case 2: array[i].x2=SvUV(*that);break;
-$indent	case 3: array[i].y2=SvUV(*that);break;
-__
-	}else{
-		push @a, "#line ", (__LINE__ +1), ' "', __FILE__, "\"\n", << "__";
-$indent	case 0: array[i].x=SvUV(*that);break;
-$indent	case 1: array[i].y=SvUV(*that);break;
-__
-		if('XCBPoint'eq$type){}else{
-			push @a, "#line ", (__LINE__ +1), ' "', __FILE__, "\"\n", << "__";
-$indent	case 2: array[i].width=SvUV(*that);break;
-$indent	case 3: array[i].height=SvUV(*that);break;
-__
-			if('XCBRectangle'eq$type){}else{
-				push @a, "#line ", (__LINE__ +1), ' "', __FILE__, "\"\n", << "__";
-$indent	case 4: array[i].angle1=SvUV(*that);break;
-$indent	case 5: array[i].angle2=SvUV(*that);break;
-__
-			}
+	if($typegroup{$type}){
+		for(my $i=0;$i<$typesize{$type};$i++){
+			push @a, "$indent	case $i: array[i].$typemem{$typegroup{$type}}[$i]=SvUV(*that);break;\n"
 		}
-		push @a, "#line ", (__LINE__ +1), ' "', __FILE__, "\"\n", << "__";
-__
+	}else{
+		die $type;
 	}
 	push @a, "#line ", (__LINE__ +1), ' "', __FILE__, "\"\n", << "__";
 $indent	default: warn("this should not happen");break;
@@ -69,20 +70,16 @@ sub psub{
 	#$type=~s/ \*$//;
 	my @a;
 	#my $b="bool st$type()";
-	my $size;
-	my $array='pname';
-	#push @a, $b, ";// for prototype warning\n",$b, << "__";
-#{
-#	return true;
-#}
-#__
-	if('XCBArc'eq$type){		$size=6;
-	}elsif('XCBRectangle'eq$type){	$size=4;
-	}elsif('XCBPoint'eq$type){	$size=2;
-	}elsif('XCBSegment'eq$type){	$size=4;	$array='qname';
+	my $size=$typesize{$type};;
+	my $array=$typegroup{$type};
+	if($size){
+	}elsif('XCBArc'eq$type){	$size=6;	$array='pname';
+	}elsif('XCBPoint'eq$type){	$size=2;	$array='pname';
+	}elsif('XCBColoritem'eq$type){	$size=5;	$array='cname';
 	}else{		warn '$size needs set';
 			die $type;
 	}
+	die $type unless $array;
 	push @a, "#line ", (__LINE__ +1), ' "', __FILE__, "\"\n", decl(@_), << "__";
 {
 	$type* array=0;
@@ -220,6 +217,10 @@ __
 __
 	return join '', @a;
 }
+sub narray{
+	my($type)=@_;
+	return "char *$type\[".scalar @{$typemem{$type}}."]={".join(', ', map {"\"$_\""} @{$typemem{$type}})."};\n";
+}
 sub c{
 	print "#line ", (__LINE__ +1), ' "', __FILE__, "\"\n", << "__";
 #include "EXTERN.h"
@@ -235,11 +236,9 @@ sub c{
 
 #include "XCB.h"
 
-char *pname[6]={"x","y","width","height","angle1","angle2"};
-char *qname[4]={"x1","y1","x2","y2"};
-
 __
-	print map {psub($_)} qw(XCBSegment XCBArc XCBRectangle XCBPoint);
+	print map {narray($_)} sort keys %typemem;
+	print map {psub($_)} @typenames;
 }
 sub h{
 	print "#line ", (__LINE__ +1), ' "', __FILE__, "\"\n", << "__";
@@ -272,6 +271,6 @@ SV *convert_ucs2_to_utf8(xcb_char2b_t *text, size_t num_glyphs);
 xcb_char2b_t *convert_SV_to_ucs2(SV *input, size_t *real_strlen);
 
 __
-	print map {decl($_).";\n"} qw(XCBSegment XCBArc XCBRectangle XCBPoint);
+	print map {decl($_).";\n"} @typenames;
 }
 if('h'eq$ARGV[0]){h;}elsif('c'eq$ARGV[0]){c;}else{die $ARGV[0]}
