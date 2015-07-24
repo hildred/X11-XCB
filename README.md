@@ -3,7 +3,7 @@ X11-XCB version 0.14
 
 X11::XCB is a wrapper around lib xcb the X c language bindings which was
 intinded to be a replacement for xlib. As such this is mostly just a
-strait wrap but with a slightly more perlish flavor.
+straight wrap but with a slightly more perlish flavor.
 
 INSTALLATION
 
