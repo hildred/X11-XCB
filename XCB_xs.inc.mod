@@ -3262,7 +3262,7 @@ change_hosts(conn,mode,family,address_sv)
     uint8_t family
     SV* address_sv
   PREINIT:
-    char* address;
+    char * address;
     STRLEN address_len;
     HV * hash;
     xcb_void_cookie_t cookie;

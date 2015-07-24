@@ -174,7 +174,11 @@ sub tmpl_request {
     my $name=shift;
     my ($cookie, $params, $types, $xcb_cast, $cleanups) = @_;
     return if grep { defined $types->{$_} and $types->{$_} =~ /^void/} @$params; ### void types must be handled by hand.
+    return if grep { /^pixels$/} @$params; ### colors need work
+    return if grep { /^items_$/} @$params; ### colors need work
+    return if grep { /^atoms$/} @$params; ### atoms need work
     return if $name=~/^poly_text/;  ### length abuse, need a plan
+    return if grep { /^map$/} @$params; ### just so I can get the git version to build without help, todo.
 
     if(defined($types->{rectangles_len})&& 'int'	eq $types->{rectangles_len}	){$types->{rectangles_len}='U32';}
     if(defined($types->{segments_len})&& 'int'		eq $types->{segments_len}	){$types->{segments_len}='U32';}
@@ -183,11 +187,13 @@ sub tmpl_request {
     if(defined($types->{string_len})&&	'uint8_t'	eq $types->{string_len}		){$types->{string_len}='STRLEN';}
     if(defined($types->{string_len})&&	'int'		eq $types->{string_len}		){$types->{string_len}='STRLEN';}
     if(defined($types->{pattern_len})&& 'uint16_t'	eq $types->{pattern_len}	){$types->{pattern_len}='STRLEN';}
+    if(defined($types->{address_len})&& 'uint16_t'	eq $types->{address_len}	){$types->{address_len}='STRLEN';}
     if(defined($types->{name_len})&&	'uint16_t'	eq $types->{name_len}		){$types->{name_len}='STRLEN';}
     if(defined($types->{data_len})&&	'int'		eq $types->{data_len}		){$types->{data_len}='STRLEN';}
     if(defined($types->{value_list})&&	'intArray16 *'	eq $types->{value_list}		){$types->{value_list}='intArray32 *';}
     if(defined($types->{dashes})&&	'intArray8 *'	eq $types->{dashes}		){$types->{dashes}='uint8_t *';$xcb_cast->{dashes}='';}
     if(defined($types->{data})&&	'intArray8 *'	eq $types->{data}		){$types->{data}='char *';}
+    if(defined($types->{address})&&	'intArray8 *'	eq $types->{address}		){$types->{address}='char *';}
     my %param = map { my $a=$_;$a=~s/_len$//; $a,1} grep { /_len$/ } @$params;
     my $param = join ',', ('conn', map {
 	    if($param{$_}){
