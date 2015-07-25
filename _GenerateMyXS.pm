@@ -646,6 +646,11 @@ __
 
     for my $path (@files) {
         say "Processing: $path";
+	{
+		my $inc=$path;
+		$inc=~s!.*/([^/]+)\.xml!$1.h!;
+		print OUTTD "#include <xcb/$inc>\n"
+	}
         my $xcb = XMLin("$path", KeyAttr => undef, ForceArray => 1);
 
         $parser = XML::Descent->new({ Input => $path });

@@ -4890,3 +4890,1233 @@ xinerama_query_screens_reply(conn,sequence)
   OUTPUT:
     RETVAL
 
+MODULE = X11::XCB PACKAGE = XCBRandr_screen_size
+XCBRandr_screen_size *
+new(self,width,height,mwidth,mheight)
+    SV* self
+    uint16_t width
+    uint16_t height
+    uint16_t mwidth
+    uint16_t mheight
+  PREINIT:
+    XCBRandr_screen_size *buf;
+  CODE:
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBRandr::screen::size");
+    New(0, buf, 1, XCBRandr_screen_size);
+    buf->width = width;
+    buf->height = height;
+    buf->mwidth = mwidth;
+    buf->mheight = mheight;
+    RETVAL = buf;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_screen_sizePtr
+
+uint16_t
+width(self)
+    XCBRandr_screen_size * self
+  CODE:
+    RETVAL = self->width;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_screen_sizePtr
+
+uint16_t
+height(self)
+    XCBRandr_screen_size * self
+  CODE:
+    RETVAL = self->height;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_screen_sizePtr
+
+uint16_t
+mwidth(self)
+    XCBRandr_screen_size * self
+  CODE:
+    RETVAL = self->mwidth;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_screen_sizePtr
+
+uint16_t
+mheight(self)
+    XCBRandr_screen_size * self
+  CODE:
+    RETVAL = self->mheight;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_refresh_rates
+XCBRandr_refresh_rates *
+new(self,nRates)
+    SV* self
+    uint16_t nRates
+  PREINIT:
+    XCBRandr_refresh_rates *buf;
+  CODE:
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBRandr::refresh::rates");
+    New(0, buf, 1, XCBRandr_refresh_rates);
+    buf->nRates = nRates;
+    RETVAL = buf;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_mode_info
+XCBRandr_mode_info *
+new(self,id,width,height,dot_clock,hsync_start,hsync_end,htotal,hskew,vsync_start,vsync_end,vtotal,name_len,mode_flags)
+    SV* self
+    uint32_t id
+    uint16_t width
+    uint16_t height
+    uint32_t dot_clock
+    uint16_t hsync_start
+    uint16_t hsync_end
+    uint16_t htotal
+    uint16_t hskew
+    uint16_t vsync_start
+    uint16_t vsync_end
+    uint16_t vtotal
+    uint16_t name_len
+    uint32_t mode_flags
+  PREINIT:
+    XCBRandr_mode_info *buf;
+  CODE:
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBRandr::mode::info");
+    New(0, buf, 1, XCBRandr_mode_info);
+    buf->id = id;
+    buf->width = width;
+    buf->height = height;
+    buf->dot_clock = dot_clock;
+    buf->hsync_start = hsync_start;
+    buf->hsync_end = hsync_end;
+    buf->htotal = htotal;
+    buf->hskew = hskew;
+    buf->vsync_start = vsync_start;
+    buf->vsync_end = vsync_end;
+    buf->vtotal = vtotal;
+    buf->name_len = name_len;
+    buf->mode_flags = mode_flags;
+    RETVAL = buf;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_mode_infoPtr
+
+uint32_t
+id(self)
+    XCBRandr_mode_info * self
+  CODE:
+    RETVAL = self->id;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_mode_infoPtr
+
+uint16_t
+width(self)
+    XCBRandr_mode_info * self
+  CODE:
+    RETVAL = self->width;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_mode_infoPtr
+
+uint16_t
+height(self)
+    XCBRandr_mode_info * self
+  CODE:
+    RETVAL = self->height;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_mode_infoPtr
+
+uint32_t
+dot_clock(self)
+    XCBRandr_mode_info * self
+  CODE:
+    RETVAL = self->dot_clock;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_mode_infoPtr
+
+uint16_t
+hsync_start(self)
+    XCBRandr_mode_info * self
+  CODE:
+    RETVAL = self->hsync_start;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_mode_infoPtr
+
+uint16_t
+hsync_end(self)
+    XCBRandr_mode_info * self
+  CODE:
+    RETVAL = self->hsync_end;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_mode_infoPtr
+
+uint16_t
+htotal(self)
+    XCBRandr_mode_info * self
+  CODE:
+    RETVAL = self->htotal;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_mode_infoPtr
+
+uint16_t
+hskew(self)
+    XCBRandr_mode_info * self
+  CODE:
+    RETVAL = self->hskew;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_mode_infoPtr
+
+uint16_t
+vsync_start(self)
+    XCBRandr_mode_info * self
+  CODE:
+    RETVAL = self->vsync_start;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_mode_infoPtr
+
+uint16_t
+vsync_end(self)
+    XCBRandr_mode_info * self
+  CODE:
+    RETVAL = self->vsync_end;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_mode_infoPtr
+
+uint16_t
+vtotal(self)
+    XCBRandr_mode_info * self
+  CODE:
+    RETVAL = self->vtotal;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_mode_infoPtr
+
+uint16_t
+name_len(self)
+    XCBRandr_mode_info * self
+  CODE:
+    RETVAL = self->name_len;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_mode_infoPtr
+
+uint32_t
+mode_flags(self)
+    XCBRandr_mode_info * self
+  CODE:
+    RETVAL = self->mode_flags;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_crtc_change
+XCBRandr_crtc_change *
+new(self,timestamp,window,crtc,mode,rotation,x,y,width,height)
+    SV* self
+    uint32_t timestamp
+    uint32_t window
+    uint32_t crtc
+    uint32_t mode
+    uint16_t rotation
+    uint16_t x
+    uint16_t y
+    uint16_t width
+    uint16_t height
+  PREINIT:
+    XCBRandr_crtc_change *buf;
+  CODE:
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBRandr::crtc::change");
+    New(0, buf, 1, XCBRandr_crtc_change);
+    buf->timestamp = timestamp;
+    buf->window = window;
+    buf->crtc = crtc;
+    buf->mode = mode;
+    buf->rotation = rotation;
+    buf->x = x;
+    buf->y = y;
+    buf->width = width;
+    buf->height = height;
+    RETVAL = buf;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_crtc_changePtr
+
+uint32_t
+timestamp(self)
+    XCBRandr_crtc_change * self
+  CODE:
+    RETVAL = self->timestamp;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_crtc_changePtr
+
+uint32_t
+window(self)
+    XCBRandr_crtc_change * self
+  CODE:
+    RETVAL = self->window;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_crtc_changePtr
+
+uint32_t
+crtc(self)
+    XCBRandr_crtc_change * self
+  CODE:
+    RETVAL = self->crtc;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_crtc_changePtr
+
+uint32_t
+mode(self)
+    XCBRandr_crtc_change * self
+  CODE:
+    RETVAL = self->mode;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_crtc_changePtr
+
+uint16_t
+rotation(self)
+    XCBRandr_crtc_change * self
+  CODE:
+    RETVAL = self->rotation;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_crtc_changePtr
+
+uint16_t
+x(self)
+    XCBRandr_crtc_change * self
+  CODE:
+    RETVAL = self->x;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_crtc_changePtr
+
+uint16_t
+y(self)
+    XCBRandr_crtc_change * self
+  CODE:
+    RETVAL = self->y;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_crtc_changePtr
+
+uint16_t
+width(self)
+    XCBRandr_crtc_change * self
+  CODE:
+    RETVAL = self->width;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_crtc_changePtr
+
+uint16_t
+height(self)
+    XCBRandr_crtc_change * self
+  CODE:
+    RETVAL = self->height;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_change
+XCBRandr_output_change *
+new(self,timestamp,config_timestamp,window,output,crtc,mode,rotation,connection,subpixel_order)
+    SV* self
+    uint32_t timestamp
+    uint32_t config_timestamp
+    uint32_t window
+    uint32_t output
+    uint32_t crtc
+    uint32_t mode
+    uint16_t rotation
+    uint8_t connection
+    uint8_t subpixel_order
+  PREINIT:
+    XCBRandr_output_change *buf;
+  CODE:
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBRandr::output::change");
+    New(0, buf, 1, XCBRandr_output_change);
+    buf->timestamp = timestamp;
+    buf->config_timestamp = config_timestamp;
+    buf->window = window;
+    buf->output = output;
+    buf->crtc = crtc;
+    buf->mode = mode;
+    buf->rotation = rotation;
+    buf->connection = connection;
+    buf->subpixel_order = subpixel_order;
+    RETVAL = buf;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_changePtr
+
+uint32_t
+timestamp(self)
+    XCBRandr_output_change * self
+  CODE:
+    RETVAL = self->timestamp;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_changePtr
+
+uint32_t
+config_timestamp(self)
+    XCBRandr_output_change * self
+  CODE:
+    RETVAL = self->config_timestamp;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_changePtr
+
+uint32_t
+window(self)
+    XCBRandr_output_change * self
+  CODE:
+    RETVAL = self->window;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_changePtr
+
+uint32_t
+output(self)
+    XCBRandr_output_change * self
+  CODE:
+    RETVAL = self->output;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_changePtr
+
+uint32_t
+crtc(self)
+    XCBRandr_output_change * self
+  CODE:
+    RETVAL = self->crtc;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_changePtr
+
+uint32_t
+mode(self)
+    XCBRandr_output_change * self
+  CODE:
+    RETVAL = self->mode;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_changePtr
+
+uint16_t
+rotation(self)
+    XCBRandr_output_change * self
+  CODE:
+    RETVAL = self->rotation;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_changePtr
+
+uint8_t
+connection(self)
+    XCBRandr_output_change * self
+  CODE:
+    RETVAL = self->connection;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_changePtr
+
+uint8_t
+subpixel_order(self)
+    XCBRandr_output_change * self
+  CODE:
+    RETVAL = self->subpixel_order;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_property
+XCBRandr_output_property *
+new(self,window,output,atom,timestamp,status)
+    SV* self
+    uint32_t window
+    uint32_t output
+    uint32_t atom
+    uint32_t timestamp
+    uint8_t status
+  PREINIT:
+    XCBRandr_output_property *buf;
+  CODE:
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBRandr::output::property");
+    New(0, buf, 1, XCBRandr_output_property);
+    buf->window = window;
+    buf->output = output;
+    buf->atom = atom;
+    buf->timestamp = timestamp;
+    buf->status = status;
+    RETVAL = buf;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_propertyPtr
+
+uint32_t
+window(self)
+    XCBRandr_output_property * self
+  CODE:
+    RETVAL = self->window;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_propertyPtr
+
+uint32_t
+output(self)
+    XCBRandr_output_property * self
+  CODE:
+    RETVAL = self->output;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_propertyPtr
+
+uint32_t
+atom(self)
+    XCBRandr_output_property * self
+  CODE:
+    RETVAL = self->atom;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_propertyPtr
+
+uint32_t
+timestamp(self)
+    XCBRandr_output_property * self
+  CODE:
+    RETVAL = self->timestamp;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_output_propertyPtr
+
+uint8_t
+status(self)
+    XCBRandr_output_property * self
+  CODE:
+    RETVAL = self->status;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_provider_change
+XCBRandr_provider_change *
+new(self,timestamp,window,provider)
+    SV* self
+    uint32_t timestamp
+    uint32_t window
+    uint32_t provider
+  PREINIT:
+    XCBRandr_provider_change *buf;
+  CODE:
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBRandr::provider::change");
+    New(0, buf, 1, XCBRandr_provider_change);
+    buf->timestamp = timestamp;
+    buf->window = window;
+    buf->provider = provider;
+    RETVAL = buf;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_provider_changePtr
+
+uint32_t
+timestamp(self)
+    XCBRandr_provider_change * self
+  CODE:
+    RETVAL = self->timestamp;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_provider_changePtr
+
+uint32_t
+window(self)
+    XCBRandr_provider_change * self
+  CODE:
+    RETVAL = self->window;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_provider_changePtr
+
+uint32_t
+provider(self)
+    XCBRandr_provider_change * self
+  CODE:
+    RETVAL = self->provider;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_provider_property
+XCBRandr_provider_property *
+new(self,window,provider,atom,timestamp,state)
+    SV* self
+    uint32_t window
+    uint32_t provider
+    uint32_t atom
+    uint32_t timestamp
+    uint8_t state
+  PREINIT:
+    XCBRandr_provider_property *buf;
+  CODE:
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBRandr::provider::property");
+    New(0, buf, 1, XCBRandr_provider_property);
+    buf->window = window;
+    buf->provider = provider;
+    buf->atom = atom;
+    buf->timestamp = timestamp;
+    buf->state = state;
+    RETVAL = buf;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_provider_propertyPtr
+
+uint32_t
+window(self)
+    XCBRandr_provider_property * self
+  CODE:
+    RETVAL = self->window;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_provider_propertyPtr
+
+uint32_t
+provider(self)
+    XCBRandr_provider_property * self
+  CODE:
+    RETVAL = self->provider;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_provider_propertyPtr
+
+uint32_t
+atom(self)
+    XCBRandr_provider_property * self
+  CODE:
+    RETVAL = self->atom;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_provider_propertyPtr
+
+uint32_t
+timestamp(self)
+    XCBRandr_provider_property * self
+  CODE:
+    RETVAL = self->timestamp;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_provider_propertyPtr
+
+uint8_t
+state(self)
+    XCBRandr_provider_property * self
+  CODE:
+    RETVAL = self->state;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_resource_change
+XCBRandr_resource_change *
+new(self,timestamp,window)
+    SV* self
+    uint32_t timestamp
+    uint32_t window
+  PREINIT:
+    XCBRandr_resource_change *buf;
+  CODE:
+    if(SvOK(self)) Perl_croak(aTHX_ "%s: self is not ok", "XCBRandr::resource::change");
+    New(0, buf, 1, XCBRandr_resource_change);
+    buf->timestamp = timestamp;
+    buf->window = window;
+    RETVAL = buf;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_resource_changePtr
+
+uint32_t
+timestamp(self)
+    XCBRandr_resource_change * self
+  CODE:
+    RETVAL = self->timestamp;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = XCBRandr_resource_changePtr
+
+uint32_t
+window(self)
+    XCBRandr_resource_change * self
+  CODE:
+    RETVAL = self->window;
+  OUTPUT:
+    RETVAL
+
+MODULE = X11::XCB PACKAGE = X11::XCB
+HV *
+randr_query_version(conn,major_version,minor_version)
+    XCBConnection *conn
+    uint32_t major_version
+    uint32_t minor_version
+  PREINIT:
+
+    HV * hash;
+    xcb_randr_query_version_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_query_version(conn, major_version, minor_version);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_set_screen_config(conn,window,timestamp,config_timestamp,sizeID,rotation,rate)
+    XCBConnection *conn
+    uint32_t window
+    uint32_t timestamp
+    uint32_t config_timestamp
+    uint16_t sizeID
+    uint16_t rotation
+    uint16_t rate
+  PREINIT:
+
+    HV * hash;
+    xcb_randr_set_screen_config_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_set_screen_config(conn, window, timestamp, config_timestamp, sizeID, rotation, rate);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_select_input(conn,window,enable)
+    XCBConnection *conn
+    uint32_t window
+    uint16_t enable
+  PREINIT:
+
+    HV * hash;
+    xcb_void_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_select_input(conn, window, enable);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_get_screen_info(conn,window)
+    XCBConnection *conn
+    uint32_t window
+  PREINIT:
+
+    HV * hash;
+    xcb_randr_get_screen_info_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_get_screen_info(conn, window);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_get_screen_size_range(conn,window)
+    XCBConnection *conn
+    uint32_t window
+  PREINIT:
+
+    HV * hash;
+    xcb_randr_get_screen_size_range_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_get_screen_size_range(conn, window);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_set_screen_size(conn,window,width,height,mm_width,mm_height)
+    XCBConnection *conn
+    uint32_t window
+    uint16_t width
+    uint16_t height
+    uint32_t mm_width
+    uint32_t mm_height
+  PREINIT:
+
+    HV * hash;
+    xcb_void_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_set_screen_size(conn, window, width, height, mm_width, mm_height);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_get_screen_resources(conn,window)
+    XCBConnection *conn
+    uint32_t window
+  PREINIT:
+
+    HV * hash;
+    xcb_randr_get_screen_resources_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_get_screen_resources(conn, window);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_get_output_info(conn,output,config_timestamp)
+    XCBConnection *conn
+    uint32_t output
+    uint32_t config_timestamp
+  PREINIT:
+
+    HV * hash;
+    xcb_randr_get_output_info_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_get_output_info(conn, output, config_timestamp);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_list_output_properties(conn,output)
+    XCBConnection *conn
+    uint32_t output
+  PREINIT:
+
+    HV * hash;
+    xcb_randr_list_output_properties_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_list_output_properties(conn, output);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_query_output_property(conn,output,property)
+    XCBConnection *conn
+    uint32_t output
+    uint32_t property
+  PREINIT:
+
+    HV * hash;
+    xcb_randr_query_output_property_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_query_output_property(conn, output, property);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_configure_output_property(conn,output,property,pending,range,...)
+    XCBConnection *conn
+    uint32_t output
+    uint32_t property
+    int pending
+    int range
+  PREINIT:
+    intArray32 * values;
+    int values_len;
+    HV * hash;
+    xcb_void_cookie_t cookie;
+  CODE:
+    if(1>items-5)croak("%s: %s is empty","X11::XCB::randr_configure_output_property","values");
+    if(1!=items-5){
+	// we have a list!
+	values_len = items-5;
+	Newx(values, values_len, intArray32);
+	if(0==values){croak("%s: %s Newx failed","X11::XCB::randr_configure_output_property","values");}
+        {int i;for(i=0;i<values_len;i++){
+	    SV* this=ST(i+5);
+	    if(0==this){croak("%s: %s null pointer","X11::XCB::randr_configure_output_property","values");}
+	    SvGETMAGIC(this);
+	    values[i]=SvUV(this);
+	}}
+    }else{
+	if (!SvROK(ST(5))){croak("%s: %s expecting more","X11::XCB::randr_configure_output_property","values");}
+	if (!SvTYPE(SvRV(ST(5))) == SVt_PVAV){croak("%s: %s not an array or array ref","X11::XCB::randr_configure_output_property","values");}
+	AV* me = (AV*)SvRV(ST(5));
+	values_len = 1+av_len(me);
+	if(1>values_len){Perl_croak(aTHX_ "%s: %s is empty","X11::XCB::randr_configure_output_property","values");}
+	Newx(values, values_len, intArray32);
+	{int i;for(i=0;i<values_len;i++){
+	    SV** this=av_fetch(me,i,0);
+	    if(0==this){Perl_croak(aTHX_ "%s: %s null pointer","X11::XCB::randr_configure_output_property","values");}
+	    SvGETMAGIC(*this);
+	    values[i]=SvUV(*this);
+	}}
+    }
+
+    cookie = xcb_randr_configure_output_property(conn, output, property, pending, range, values_len,  (const uint32_t*)values);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+    free(values);
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_delete_output_property(conn,output,property)
+    XCBConnection *conn
+    uint32_t output
+    uint32_t property
+  PREINIT:
+
+    HV * hash;
+    xcb_void_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_delete_output_property(conn, output, property);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_get_output_property(conn,output,property,type,long_offset,long_length,delete,pending)
+    XCBConnection *conn
+    uint32_t output
+    uint32_t property
+    uint32_t type
+    uint32_t long_offset
+    uint32_t long_length
+    int delete
+    int pending
+  PREINIT:
+
+    HV * hash;
+    xcb_randr_get_output_property_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_get_output_property(conn, output, property, type, long_offset, long_length, delete, pending);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_destroy_mode(conn,mode)
+    XCBConnection *conn
+    uint32_t mode
+  PREINIT:
+
+    HV * hash;
+    xcb_void_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_destroy_mode(conn, mode);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_add_output_mode(conn,output,mode)
+    XCBConnection *conn
+    uint32_t output
+    uint32_t mode
+  PREINIT:
+
+    HV * hash;
+    xcb_void_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_add_output_mode(conn, output, mode);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_delete_output_mode(conn,output,mode)
+    XCBConnection *conn
+    uint32_t output
+    uint32_t mode
+  PREINIT:
+
+    HV * hash;
+    xcb_void_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_delete_output_mode(conn, output, mode);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_get_crtc_info(conn,crtc,config_timestamp)
+    XCBConnection *conn
+    uint32_t crtc
+    uint32_t config_timestamp
+  PREINIT:
+
+    HV * hash;
+    xcb_randr_get_crtc_info_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_get_crtc_info(conn, crtc, config_timestamp);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_set_crtc_config(conn,crtc,timestamp,config_timestamp,x,y,mode,rotation,...)
+    XCBConnection *conn
+    uint32_t crtc
+    uint32_t timestamp
+    uint32_t config_timestamp
+    uint16_t x
+    uint16_t y
+    uint32_t mode
+    uint16_t rotation
+  PREINIT:
+    intArray32 * outputs;
+    int outputs_len;
+    HV * hash;
+    xcb_randr_set_crtc_config_cookie_t cookie;
+  CODE:
+    if(1>items-8)croak("%s: %s is empty","X11::XCB::randr_set_crtc_config","outputs");
+    if(1!=items-8){
+	// we have a list!
+	outputs_len = items-8;
+	Newx(outputs, outputs_len, intArray32);
+	if(0==outputs){croak("%s: %s Newx failed","X11::XCB::randr_set_crtc_config","outputs");}
+        {int i;for(i=0;i<outputs_len;i++){
+	    SV* this=ST(i+8);
+	    if(0==this){croak("%s: %s null pointer","X11::XCB::randr_set_crtc_config","outputs");}
+	    SvGETMAGIC(this);
+	    outputs[i]=SvUV(this);
+	}}
+    }else{
+	if (!SvROK(ST(8))){croak("%s: %s expecting more","X11::XCB::randr_set_crtc_config","outputs");}
+	if (!SvTYPE(SvRV(ST(8))) == SVt_PVAV){croak("%s: %s not an array or array ref","X11::XCB::randr_set_crtc_config","outputs");}
+	AV* me = (AV*)SvRV(ST(8));
+	outputs_len = 1+av_len(me);
+	if(1>outputs_len){Perl_croak(aTHX_ "%s: %s is empty","X11::XCB::randr_set_crtc_config","outputs");}
+	Newx(outputs, outputs_len, intArray32);
+	{int i;for(i=0;i<outputs_len;i++){
+	    SV** this=av_fetch(me,i,0);
+	    if(0==this){Perl_croak(aTHX_ "%s: %s null pointer","X11::XCB::randr_set_crtc_config","outputs");}
+	    SvGETMAGIC(*this);
+	    outputs[i]=SvUV(*this);
+	}}
+    }
+
+    cookie = xcb_randr_set_crtc_config(conn, crtc, timestamp, config_timestamp, x, y, mode, rotation, outputs_len,  (const uint32_t*)outputs);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+    free(outputs);
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_get_crtc_gamma_size(conn,crtc)
+    XCBConnection *conn
+    uint32_t crtc
+  PREINIT:
+
+    HV * hash;
+    xcb_randr_get_crtc_gamma_size_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_get_crtc_gamma_size(conn, crtc);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_get_crtc_gamma(conn,crtc)
+    XCBConnection *conn
+    uint32_t crtc
+  PREINIT:
+
+    HV * hash;
+    xcb_randr_get_crtc_gamma_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_get_crtc_gamma(conn, crtc);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_set_crtc_gamma(conn,crtc,size,red,green,blue)
+    XCBConnection *conn
+    uint32_t crtc
+    uint16_t size
+    intArray16 * red
+    intArray16 * green
+    intArray16 * blue
+  PREINIT:
+
+    HV * hash;
+    xcb_void_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_set_crtc_gamma(conn, crtc, size,  (const uint16_t*)red,  (const uint16_t*)green,  (const uint16_t*)blue);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+    free(red);
+    free(green);
+    free(blue);
+  OUTPUT:
+    RETVAL
+
+HV *
+randr_get_screen_resources_current(conn,window)
+    XCBConnection *conn
+    uint32_t window
+  PREINIT:
+
+    HV * hash;
+    xcb_randr_get_screen_resources_current_cookie_t cookie;
+  CODE:
+
+    cookie = xcb_randr_get_screen_resources_current(conn, window);
+
+    hash = newHV();
+    hv_store(hash, "sequence", strlen("sequence"), newSViv(cookie.sequence), 0);
+    RETVAL = hash;
+
+  OUTPUT:
+    RETVAL
+

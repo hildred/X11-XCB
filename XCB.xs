@@ -2,7 +2,6 @@
 #include "perl.h"
 #include "XSUB.h"
 #include <xcb/xcb.h>
-#include <xcb/xinerama.h>
 
 #include "ppport.h"
 
