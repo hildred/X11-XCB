@@ -5,7 +5,8 @@ use Mouse;
 extends qw/Mouse::Object X11::XCB/;
 
 sub BUILD {
-    shift->_connect_and_attach_struct;
+    my $self=shift;
+    $self->{screens}=$self->_connect_and_attach_struct;
 }
 
 # free struct

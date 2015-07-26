@@ -186,7 +186,7 @@ BOOT:
     boot_constants(stash, tags_all);
 }
 
-void
+int
 _connect_and_attach_struct(self)
     SV *self
   PREINIT:
@@ -198,11 +198,12 @@ _connect_and_attach_struct(self)
         croak("Attribute 'display' is required");
 
     const char *displayname = SvPV_nolen(*disp);
-    int screenp;
 
-    xcbconnbuf = xcb_connect(displayname, &screenp);
+    xcbconnbuf = xcb_connect(displayname, &RETVAL);
     /* XXX: error checking */
     xs_object_magic_attach_struct(aTHX_ SvRV(self), xcbconnbuf);
+  OUTPUT:
+    RETVAL
 
 void
 DESTROY(self)

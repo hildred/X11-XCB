@@ -25,7 +25,7 @@ sub new {
 
     my $self = bless { display => $display }, $class;
 
-    $self->_connect_and_attach_struct;
+    $self->{screens}=$self->_connect_and_attach_struct;
 
     return $self;
 }
