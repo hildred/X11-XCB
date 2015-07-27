@@ -244,6 +244,22 @@ _connect_and_attach_struct(self,populate = false)
     RETVAL
 
 void
+populate(self)
+    SV *self;
+  PREINIT:
+    XCBConnection *xcbconnbuf;
+  CODE:
+    assert(sv_derivered_from(self, __PACKAGE__));
+    SV **scr = hv_fetch((HV*)SvRV(self), "screens", strlen("screens"), 0);
+    if(!scr)
+        croak("Attribute 'screens' is required");
+
+    int screens = SvIV(*scr);
+
+    xcbconnbuf = xs_object_magic_get_struct_rv(aTHX_ self);
+    xcb_populate((HV*)SvRV(self),xcbconnbuf, screens);
+
+void
 DESTROY(self)
     XCBConnection *self
   CODE:
@@ -303,30 +319,6 @@ poll_for_event(self)
     } else {
         RETVAL = _new_event_object(event);
     }
-  OUTPUT:
-    RETVAL
-
-#/xcb_setup_t *
-#/get_setup(conn)
-#/    XCBConnection *conn
-#/  CODE:
-#/    RETVAL = xcb_get_setup(conn);
-#/  OUTPUT:
-#/    RETVAL
-
-int
-get_white(conn)
-    XCBConnection *conn
-  CODE:
-    RETVAL = xcb_setup_roots_iterator(xcb_get_setup(conn)).data->white_pixel;
-  OUTPUT:
-    RETVAL
-
-int
-get_black(conn)
-    XCBConnection *conn
-  CODE:
-    RETVAL = xcb_setup_roots_iterator(xcb_get_setup(conn)).data->black_pixel;
   OUTPUT:
     RETVAL
 

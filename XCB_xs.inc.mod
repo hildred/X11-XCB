@@ -926,7 +926,7 @@ new(self,family,address_len)
 
 MODULE = X11::XCB PACKAGE = X11::XCB
 HV *
-create_window(conn,depth,wid,parent,x,y,width,height,border_width,class,visual,value_mask,value_list,...)
+create_window(conn,depth,wid,parent,x,y,width,height,border_width,class,visual,value_mask,...)
     XCBConnection *conn
     uint8_t depth
     uint32_t wid
@@ -939,12 +939,20 @@ create_window(conn,depth,wid,parent,x,y,width,height,border_width,class,visual,v
     uint16_t class
     uint32_t visual
     uint32_t value_mask
-    intArray32 * value_list
   PREINIT:
+    intArray32 * value_list;
 
     HV * hash;
     xcb_void_cookie_t cookie;
   CODE:
+	U32 ix_value_list = 12;
+	value_list = intArray32Ptr(items -= 12);
+	while (items--) {
+		value_list[ix_value_list - 12] = (intArray32)SvUV(ST(ix_value_list));
+		ix_value_list++;
+	}
+        /* this is the number of elements in the array */
+        ix_value_list -= 12;
 
     cookie = xcb_create_window(conn, depth, wid, parent, x, y, width, height, border_width, class, visual, value_mask, value_list);
 
