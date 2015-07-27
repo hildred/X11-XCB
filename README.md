@@ -41,9 +41,7 @@ the following modules from cpan:
 
 COPYRIGHT AND LICENCE
 
-Put the correct copyright and licence information here.
-
-Copyright (C) 2009 by Michael Stapelberg
+Copyright (C) 2009 by Michael Stapelberg  
 Copyright (C) 2015 by Ben Hildred
 
 This library is free software; you can redistribute it and/or modify
