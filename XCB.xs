@@ -164,6 +164,42 @@ _new_event_object(xcb_generic_event_t *event)
     return sv_bless(newRV_noinc((SV*)hash), gv_stashpv(objname, 1));
 }
 
+#define HV_STORE_IV(h, s, i) hv_store(h, s, strlen(s),newSViv(i),0)
+#define HV_LOCAL_IV(s) hv_store(h, #s, strlen(#s),newSViv(screen->s),0)
+#define HV_LOCAL_2(s,c) xs_object_magic_attach_struct(aTHX_ *hv_store(h, #s, strlen(#s),newSViv(screen->s),0), screen->s)
+void xcb_populate(HV* self,XCBConnection* c, int screens);
+void xcb_populate(HV* self,XCBConnection* c, int screens){
+	xcb_screen_iterator_t iter;
+	AV* s=newAV();
+
+	iter = xcb_setup_roots_iterator (xcb_get_setup (c));
+	for (; iter.rem; --screens, xcb_screen_next (&iter)){
+		xcb_screen_t* screen = iter.data;
+		HV* h=newHV();
+
+		if(!screen){croak("screen is null");return;}
+		HV_LOCAL_IV(root/*,xcb_window_t*/);
+		HV_LOCAL_IV(default_colormap/*,xcb_colormap_t*/);
+		HV_LOCAL_IV(root_visual/*,xcb_visualid_t*/);
+		HV_LOCAL_IV(white_pixel);
+		HV_LOCAL_IV(black_pixel);
+		HV_LOCAL_IV(current_input_masks);
+		HV_LOCAL_IV(width_in_pixels);
+		HV_LOCAL_IV(height_in_pixels);
+		HV_LOCAL_IV(width_in_millimeters);
+		HV_LOCAL_IV(height_in_millimeters);
+		HV_LOCAL_IV(min_installed_maps);
+		HV_LOCAL_IV(max_installed_maps);
+		HV_LOCAL_IV(backing_stores);
+		HV_LOCAL_IV(save_unders);
+		HV_LOCAL_IV(root_depth);
+		HV_LOCAL_IV(allowed_depths_len);
+		hv_store(h, "height", strlen("height"),newSViv(screen->height_in_pixels),0);
+		av_store(s,screens,newRV_noinc((SV*)h));
+	}
+	hv_store(self, "screen", strlen("screen"),newRV_noinc((SV*)s),0);
+}
+
 MODULE = X11::XCB PACKAGE = X11::XCB
 
 BOOT:
@@ -187,8 +223,9 @@ BOOT:
 }
 
 int
-_connect_and_attach_struct(self)
-    SV *self
+_connect_and_attach_struct(self,populate = false)
+    SV *self;
+    bool populate;
   PREINIT:
     XCBConnection *xcbconnbuf;
   CODE:
@@ -200,6 +237,7 @@ _connect_and_attach_struct(self)
     const char *displayname = SvPV_nolen(*disp);
 
     xcbconnbuf = xcb_connect(displayname, &RETVAL);
+    if(populate){xcb_populate((HV*)SvRV(self),xcbconnbuf, RETVAL);}
     /* XXX: error checking */
     xs_object_magic_attach_struct(aTHX_ SvRV(self), xcbconnbuf);
   OUTPUT:
@@ -209,7 +247,8 @@ void
 DESTROY(self)
     XCBConnection *self
   CODE:
-    Safefree(self);
+    xcb_disconnect(self);
+    //Safefree(self);
 
 int
 has_error(self)
@@ -267,6 +306,13 @@ poll_for_event(self)
   OUTPUT:
     RETVAL
 
+#/xcb_setup_t *
+#/get_setup(conn)
+#/    XCBConnection *conn
+#/  CODE:
+#/    RETVAL = xcb_get_setup(conn);
+#/  OUTPUT:
+#/    RETVAL
 
 int
 get_white(conn)

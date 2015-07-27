@@ -17,18 +17,18 @@ XSLoader::load('X11::XCB', $VERSION);
 
 use XS::Object::Magic;
 
-sub new {
-    # XXX $screenp currently unused
-    my ($class, $display, $screenp) = @_;
-
-    $display //= '';
-
-    my $self = bless { display => $display }, $class;
-
-    $self->{screens}=$self->_connect_and_attach_struct;
-
-    return $self;
-}
+#sub new {
+#	warn 'mark 2';
+#    my ($class, $display) = @_;
+#
+#    $display //= '';
+#
+#   my $self = bless { display => $display }, $class;
+#
+#   $self->{screens}=$self->_connect_and_attach_struct;
+#
+#   return $self;
+#}
 
 1;
 __END__

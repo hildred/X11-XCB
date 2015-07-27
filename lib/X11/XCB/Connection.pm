@@ -6,13 +6,14 @@ extends qw/Mouse::Object X11::XCB/;
 
 sub BUILD {
     my $self=shift;
-    $self->{screens}=$self->_connect_and_attach_struct;
+    $self->{screens}=$self->_connect_and_attach_struct($self->{populate});
 }
 
 # free struct
 *DESTROY = \&X11::XCB::DESTROY;
 
 has 'display' => (is => 'rw', isa => 'Str', default => '');
+has populate=>(is=>'rw', isa=> 'Bool', default=>'');
 
 =head1 NAME
 
